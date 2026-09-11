@@ -1,0 +1,14 @@
+/Users/olja/KAI_University/OOP/Lab31/bin/Debug/net10.0/Lab31
+/Users/olja/KAI_University/OOP/Lab31/bin/Debug/net10.0/Lab31.deps.json
+/Users/olja/KAI_University/OOP/Lab31/bin/Debug/net10.0/Lab31.runtimeconfig.json
+/Users/olja/KAI_University/OOP/Lab31/bin/Debug/net10.0/Lab31.dll
+/Users/olja/KAI_University/OOP/Lab31/bin/Debug/net10.0/Lab31.pdb
+/Users/olja/KAI_University/OOP/Lab31/obj/Debug/net10.0/Lab31.GeneratedMSBuildEditorConfig.editorconfig
+/Users/olja/KAI_University/OOP/Lab31/obj/Debug/net10.0/Lab31.AssemblyInfoInputs.cache
+/Users/olja/KAI_University/OOP/Lab31/obj/Debug/net10.0/Lab31.AssemblyInfo.cs
+/Users/olja/KAI_University/OOP/Lab31/obj/Debug/net10.0/Lab31.csproj.CoreCompileInputs.cache
+/Users/olja/KAI_University/OOP/Lab31/obj/Debug/net10.0/Lab31.dll
+/Users/olja/KAI_University/OOP/Lab31/obj/Debug/net10.0/refint/Lab31.dll
+/Users/olja/KAI_University/OOP/Lab31/obj/Debug/net10.0/Lab31.pdb
+/Users/olja/KAI_University/OOP/Lab31/obj/Debug/net10.0/Lab31.genruntimeconfig.cache
+/Users/olja/KAI_University/OOP/Lab31/obj/Debug/net10.0/ref/Lab31.dll

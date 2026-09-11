@@ -1,0 +1,4 @@
+interface IParachuteJump
+{
+    void JumpWithParachute();
+}
