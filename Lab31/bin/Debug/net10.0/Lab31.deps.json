@@ -7,14 +7,47 @@
   "targets": {
     ".NETCoreApp,Version=v10.0": {
       "Lab31/1.0.0": {
+        "dependencies": {
+          "Lab31.Domain": "1.0.0",
+          "Lab31.FileStorage": "1.0.0"
+        },
         "runtime": {
           "Lab31.dll": {}
+        }
+      },
+      "Lab31.Domain/1.0.0": {
+        "runtime": {
+          "Lab31.Domain.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Lab31.FileStorage/1.0.0": {
+        "dependencies": {
+          "Lab31.Domain": "1.0.0"
+        },
+        "runtime": {
+          "Lab31.FileStorage.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       }
     }
   },
   "libraries": {
     "Lab31/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lab31.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lab31.FileStorage/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

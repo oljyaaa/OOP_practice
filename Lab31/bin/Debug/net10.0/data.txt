@@ -1,0 +1,36 @@
+Student OlhaSolohub
+{
+"firstname": "Olha",
+"lastname": "Solohub",
+"course": "2",
+"studentId": "STY-5673892",
+"birthDate": "08.07.2007"
+};
+Student KaterynaKulish
+{
+"firstname": "Kateryna",
+"lastname": "Kulish",
+"course": "4",
+"studentId": "FAJ-678930",
+"birthDate": "09.09.2005"
+};
+Student OlenaTymoshuk
+{
+"firstname": "Olena",
+"lastname": "Tymoshuk",
+"course": "4",
+"studentId": "JKK-363727",
+"birthDate": "23.04.2005"
+};
+Baker AndriiBondar
+{
+"firstname": "Andrii",
+"lastname": "Bondar",
+"personId": "BKR-002"
+};
+Entrepreneur IvanMelnyk
+{
+"firstname": "Ivan",
+"lastname": "Melnyk",
+"personId": "ENT-001"
+};

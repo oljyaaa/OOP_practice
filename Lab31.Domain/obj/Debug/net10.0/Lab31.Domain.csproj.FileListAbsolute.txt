@@ -1,0 +1,12 @@
+/Users/olja/KAI_University/OOP/OOP_practice/Lab31.Domain/bin/Debug/net10.0/Lab31.Domain.deps.json
+/Users/olja/KAI_University/OOP/OOP_practice/Lab31.Domain/bin/Debug/net10.0/Lab31.Domain.dll
+/Users/olja/KAI_University/OOP/OOP_practice/Lab31.Domain/bin/Debug/net10.0/Lab31.Domain.pdb
+/Users/olja/KAI_University/OOP/OOP_practice/Lab31.Domain/obj/Debug/net10.0/Lab31.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/olja/KAI_University/OOP/OOP_practice/Lab31.Domain/obj/Debug/net10.0/Lab31.Domain.AssemblyInfoInputs.cache
+/Users/olja/KAI_University/OOP/OOP_practice/Lab31.Domain/obj/Debug/net10.0/Lab31.Domain.AssemblyInfo.cs
+/Users/olja/KAI_University/OOP/OOP_practice/Lab31.Domain/obj/Debug/net10.0/Lab31.Domain.csproj.CoreCompileInputs.cache
+/Users/olja/KAI_University/OOP/OOP_practice/Lab31.Domain/obj/Debug/net10.0/Lab31.Domain.sourcelink.json
+/Users/olja/KAI_University/OOP/OOP_practice/Lab31.Domain/obj/Debug/net10.0/Lab31.Domain.dll
+/Users/olja/KAI_University/OOP/OOP_practice/Lab31.Domain/obj/Debug/net10.0/refint/Lab31.Domain.dll
+/Users/olja/KAI_University/OOP/OOP_practice/Lab31.Domain/obj/Debug/net10.0/Lab31.Domain.pdb
+/Users/olja/KAI_University/OOP/OOP_practice/Lab31.Domain/obj/Debug/net10.0/ref/Lab31.Domain.dll

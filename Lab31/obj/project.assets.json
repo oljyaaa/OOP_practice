@@ -1,11 +1,49 @@
 {
   "version": 4,
   "targets": {
-    "net10.0": {}
+    "net10.0": {
+      "Lab31.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/Lab31.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Lab31.Domain.dll": {}
+        }
+      },
+      "Lab31.FileStorage/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Lab31.Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Lab31.FileStorage.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Lab31.FileStorage.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "Lab31.Domain/1.0.0": {
+      "type": "project",
+      "path": "../Lab31.Domain/Lab31.Domain.csproj",
+      "msbuildProject": "../Lab31.Domain/Lab31.Domain.csproj"
+    },
+    "Lab31.FileStorage/1.0.0": {
+      "type": "project",
+      "path": "../Lab31.FileStorage/Lab31.FileStorage.csproj",
+      "msbuildProject": "../Lab31.FileStorage/Lab31.FileStorage.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net10.0": []
+    "net10.0": [
+      "Lab31.Domain >= 1.0.0",
+      "Lab31.FileStorage >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "/Users/olja/.nuget/packages/": {}
@@ -13,11 +51,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/olja/KAI_University/OOP/Lab31/Lab31.csproj",
+      "projectUniqueName": "/Users/olja/KAI_University/OOP/OOP_practice/Lab31/Lab31.csproj",
       "projectName": "Lab31",
-      "projectPath": "/Users/olja/KAI_University/OOP/Lab31/Lab31.csproj",
+      "projectPath": "/Users/olja/KAI_University/OOP/OOP_practice/Lab31/Lab31.csproj",
       "packagesPath": "/Users/olja/.nuget/packages/",
-      "outputPath": "/Users/olja/KAI_University/OOP/Lab31/obj/",
+      "outputPath": "/Users/olja/KAI_University/OOP/OOP_practice/Lab31/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/olja/.nuget/NuGet/NuGet.Config"
@@ -32,7 +70,14 @@
         "net10.0": {
           "framework": "net10.0",
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "/Users/olja/KAI_University/OOP/OOP_practice/Lab31.Domain/Lab31.Domain.csproj": {
+              "projectPath": "/Users/olja/KAI_University/OOP/OOP_practice/Lab31.Domain/Lab31.Domain.csproj"
+            },
+            "/Users/olja/KAI_University/OOP/OOP_practice/Lab31.FileStorage/Lab31.FileStorage.csproj": {
+              "projectPath": "/Users/olja/KAI_University/OOP/OOP_practice/Lab31.FileStorage/Lab31.FileStorage.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
