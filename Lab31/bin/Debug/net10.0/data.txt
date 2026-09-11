@@ -22,6 +22,12 @@ Student OlenaTymoshuk
 "studentId": "JKK-363727",
 "birthDate": "23.04.2005"
 };
+Baker MariaKoval
+{
+"firstname": "Maria",
+"lastname": "Koval",
+"personId": "BKR-001"
+};
 Baker AndriiBondar
 {
 "firstname": "Andrii",
@@ -33,4 +39,12 @@ Entrepreneur IvanMelnyk
 "firstname": "Ivan",
 "lastname": "Melnyk",
 "personId": "ENT-001"
+};
+Student AnastasiaGonchar
+{
+"firstname": "Anastasia",
+"lastname": "Gonchar",
+"course": "4",
+"studentId": "KDM-739482",
+"birthDate": "04.03.2003"
 };

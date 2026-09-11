@@ -40,3 +40,15 @@ Entrepreneur IvanMelnyk
 "lastname": "Melnyk",
 "personId": "ENT-001"
 };
+Entrepreneur Olegkasperskyi
+{
+"firstname": "Oleg",
+"lastname": "kasperskyi",
+"personId": "ABC-123456"
+};
+Baker OksanaDarnytsa
+{
+"firstname": "Oksana",
+"lastname": "Darnytsa",
+"personId": "AAA-7890123"
+};
