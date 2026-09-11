@@ -11,4 +11,6 @@ public abstract class Person : IIdentifiable
         FirstName = firstName;
         LastName = lastName;
     }
+
+    public abstract PersonRecord ToRecord();
 }

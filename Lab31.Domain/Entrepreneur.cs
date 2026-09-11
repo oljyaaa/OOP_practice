@@ -17,4 +17,23 @@ public sealed class Entrepreneur : Person, IParachuteJump
     {
         HasJumpedWithParachute = true;
     }
+
+    public override PersonRecord ToRecord()
+    {
+        return new PersonRecord(
+            "Entrepreneur",
+            $"{FirstName}{LastName}",
+            ["firstname", "lastname", "personId"],
+            [FirstName, LastName, PersonId]);
+    }
+}
+
+public sealed class EntrepreneurFactory : IPersonFactory
+{
+    public string RecordTypeName => "Entrepreneur";
+
+    public Person Create(PersonRecord record)
+    {
+        return new Entrepreneur(record.RequireValue("firstname"), record.RequireValue("lastname"), record.RequireValue("personId"));
+    }
 }

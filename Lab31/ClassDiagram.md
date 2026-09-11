@@ -2,29 +2,18 @@
 
 ```mermaid
 classDiagram
-    class IIdentifiable {
-        <<interface>>
-        +string UniqueId
-    }
-
-    class IParachuteJump {
-        <<interface>>
-        +bool HasJumpedWithParachute
-        +JumpWithParachute()
-    }
-
     class Person {
         <<abstract>>
         +string FirstName
         +string LastName
         +string UniqueId
+        +ToRecord() PersonRecord
     }
 
     class Student {
         +int Course
         +string StudentId
         +DateTime BirthDate
-        +bool IsStudying
         +Study()
     }
 
@@ -36,31 +25,71 @@ classDiagram
         +string PersonId
     }
 
-    class IPersonRepository {
+    class IParachuteJump {
         <<interface>>
+        +JumpWithParachute()
+    }
+
+    class PersonRecord {
+        +string TypeName
+        +string ObjectName
+        +string[] AttributeNames
+        +string[] AttributeValues
+    }
+
+    class IPersonFactory {
+        <<interface>>
+        +string RecordTypeName
+        +Create(PersonRecord) Person
+    }
+
+    class PersonFactoryRegistry {
+        +Create(PersonRecord) Person
+    }
+
+    class FileManager {
         +ReadAll() Person[]
         +Append(Person)
         +OverwriteAll(Person[])
     }
 
-    class FileManager
-    class PersonService {
-        +GetAll() Person[]
-        +FindByLastName(string) Person[]
-        +FindById(string) Person
-        +DeleteById(string) bool
+    class IPersonInputHandler {
+        <<interface>>
+        +CreatePerson() Person
     }
 
-    class ConsoleMenu
+    class IPersonAction {
+        <<interface>>
+        +CanExecute(Person) bool
+        +Execute(Person) string
+    }
 
-    Person ..|> IIdentifiable
-    Student --|> Person
-    Baker --|> Person
-    Entrepreneur --|> Person
+    Person <|-- Student
+    Person <|-- Baker
+    Person <|-- Entrepreneur
     Student ..|> IParachuteJump
     Baker ..|> IParachuteJump
     Entrepreneur ..|> IParachuteJump
-    FileManager ..|> IPersonRepository
-    PersonService --> IPersonRepository
-    ConsoleMenu --> PersonService
+    Student --> PersonRecord
+    Baker --> PersonRecord
+    Entrepreneur --> PersonRecord
+    IPersonFactory <|.. StudentFactory
+    IPersonFactory <|.. BakerFactory
+    IPersonFactory <|.. EntrepreneurFactory
+    PersonFactoryRegistry --> IPersonFactory
+    FileManager --> PersonRecord
+    FileManager --> PersonFactoryRegistry
+    IPersonInputHandler <|.. StudentInputHandler
+    IPersonInputHandler <|.. BakerInputHandler
+    IPersonInputHandler <|.. EntrepreneurInputHandler
+    IPersonAction <|.. ParachuteJumpAction
 ```
+
+## Розширення без зміни існуючих класів
+
+Щоб додати новий тип особи, потрібно створити лише новий клас-нащадок `Person`, його фабрику
+`IPersonFactory` та обробник введення `IPersonInputHandler`. Реєстри знаходять їх автоматично,
+тому `FileManager`, `ConsoleMenu` і вже створені класи не потрібно змінювати.
+
+Щоб додати нову дію, потрібно створити новий клас `IPersonAction`. Меню також знайде його
+автоматично та покаже окремим пунктом.

@@ -1,4 +1,5 @@
 ﻿using Lab31;
+using Lab31.Domain;
 using Lab31.FileStorage;
 
 class Program
@@ -13,9 +14,13 @@ class Program
         if (!File.Exists(fileName))
             fileName = Path.Combine(AppContext.BaseDirectory, "data.txt");
 
-        IPersonRepository repository = new FileManager(fileName);
+        IPersonFactoryRegistry factoryRegistry = new PersonFactoryRegistry();
+        IPersonRepository repository = new FileManager(fileName, factoryRegistry);
         PersonService service = new PersonService(repository);
-        ConsoleMenu menu = new ConsoleMenu(service);
+        ConsoleMenu menu = new ConsoleMenu(
+            service,
+            new PersonInputHandlerRegistry(),
+            new PersonActionRegistry());
 
         menu.Start();
     }

@@ -1,19 +1,21 @@
-using System.Globalization;
-using System.Text.RegularExpressions;
 using Lab31.Domain;
 
 namespace Lab31;
 
 public sealed class ConsoleMenu
 {
-    private const string NamePattern = @"^[\p{L}][\p{L}'-]{1,49}$";
-    private const string StudentIdPattern = @"^[A-Z]{3}-\d{6,7}$";
-    private const string PersonIdPattern = @"^[A-Z]{3}-\d{3,7}$";
     private readonly PersonService service;
+    private readonly IPersonInputHandler[] inputHandlers;
+    private readonly IPersonAction[] actions;
 
-    public ConsoleMenu(PersonService service)
+    public ConsoleMenu(
+        PersonService service,
+        PersonInputHandlerRegistry inputHandlerRegistry,
+        PersonActionRegistry actionRegistry)
     {
         this.service = service;
+        inputHandlers = inputHandlerRegistry.GetAll();
+        actions = actionRegistry.GetAll();
     }
 
     public void Start()
@@ -27,20 +29,7 @@ public sealed class ConsoleMenu
 
             try
             {
-                switch (choice)
-                {
-                    case 1: AddStudent(); break;
-                    case 2: AddBaker(); break;
-                    case 3: AddEntrepreneur(); break;
-                    case 4: ShowPeople(service.GetAll()); break;
-                    case 5: ShowFourthCourseSpringStudents(); break;
-                    case 6: SearchByLastName(); break;
-                    case 7: SearchById(); break;
-                    case 8: DeleteById(); break;
-                    case 9: DemonstrateParachuteJump(); break;
-                    case 0: break;
-                    default: Console.WriteLine("Такого пункту немає."); break;
-                }
+                ExecuteChoice(choice);
             }
             catch (Exception exception) when (exception is IOException or InvalidDataException or FormatException or InvalidOperationException)
             {
@@ -49,17 +38,23 @@ public sealed class ConsoleMenu
         } while (choice != 0);
     }
 
-    private static void PrintMenu()
+    private void PrintMenu()
     {
-        Console.WriteLine("\n1 - Додати студента");
-        Console.WriteLine("2 - Додати пекаря");
-        Console.WriteLine("3 - Додати підприємця");
-        Console.WriteLine("4 - Показати всі записи");
-        Console.WriteLine("5 - Студенти 4 курсу, які народилися навесні");
-        Console.WriteLine("6 - Пошук за прізвищем");
-        Console.WriteLine("7 - Пошук за унікальним ідентифікатором");
-        Console.WriteLine("8 - Видалити запис за унікальним ідентифікатором");
-        Console.WriteLine("9 - Продемонструвати стрибок із парашутом");
+        Console.WriteLine();
+
+        for (int i = 0; i < inputHandlers.Length; i++)
+            Console.WriteLine($"{i + 1} - {inputHandlers[i].MenuTitle}");
+
+        int operationsStart = inputHandlers.Length + 1;
+        Console.WriteLine($"{operationsStart} - Показати всі записи");
+        Console.WriteLine($"{operationsStart + 1} - Студенти 4 курсу, які народилися навесні");
+        Console.WriteLine($"{operationsStart + 2} - Пошук за прізвищем");
+        Console.WriteLine($"{operationsStart + 3} - Пошук за унікальним ідентифікатором");
+        Console.WriteLine($"{operationsStart + 4} - Видалити запис за унікальним ідентифікатором");
+
+        for (int i = 0; i < actions.Length; i++)
+            Console.WriteLine($"{operationsStart + 5 + i} - {actions[i].MenuTitle}");
+
         Console.WriteLine("0 - Вихід");
     }
 
@@ -69,36 +64,53 @@ public sealed class ConsoleMenu
         return int.TryParse(Console.ReadLine(), out int choice) ? choice : -1;
     }
 
-    private void AddStudent()
+    private void ExecuteChoice(int choice)
     {
-        string firstName = ReadName("Ім'я: ");
-        string lastName = ReadName("Прізвище: ");
-        int course = ReadCourse();
-        string studentId = ReadByPattern("Студентський квиток (ABC-123456): ", StudentIdPattern, "Формат: три великі літери, дефіс і 6-7 цифр.");
-        DateTime birthDate = ReadBirthDate();
+        if (choice == 0)
+            return;
 
-        service.Add(new Student(firstName, lastName, course, studentId, birthDate));
-        Console.WriteLine("Студента додано.");
+        if (choice >= 1 && choice <= inputHandlers.Length)
+        {
+            AddPerson(inputHandlers[choice - 1]);
+            return;
+        }
+
+        int operationsStart = inputHandlers.Length + 1;
+
+        switch (choice)
+        {
+            case int value when value == operationsStart:
+                ShowPeople(service.GetAll());
+                return;
+            case int value when value == operationsStart + 1:
+                ShowFourthCourseSpringStudents();
+                return;
+            case int value when value == operationsStart + 2:
+                SearchByLastName();
+                return;
+            case int value when value == operationsStart + 3:
+                SearchById();
+                return;
+            case int value when value == operationsStart + 4:
+                DeleteById();
+                return;
+        }
+
+        int actionIndex = choice - (operationsStart + 5);
+        if (actionIndex >= 0 && actionIndex < actions.Length)
+        {
+            ExecutePersonAction(actions[actionIndex]);
+            return;
+        }
+
+        Console.WriteLine("Такого пункту немає.");
     }
 
-    private void AddBaker()
+    private void AddPerson(IPersonInputHandler inputHandler)
     {
-        string firstName = ReadName("Ім'я пекаря: ");
-        string lastName = ReadName("Прізвище пекаря: ");
-        string personId = ReadByPattern("Ідентифікатор пекаря (ABC-123): ", PersonIdPattern, "Формат: три великі літери, дефіс і 3-7 цифр.");
-
-        service.Add(new Baker(firstName, lastName, personId));
-        Console.WriteLine("Пекаря додано.");
-    }
-
-    private void AddEntrepreneur()
-    {
-        string firstName = ReadName("Ім'я підприємця: ");
-        string lastName = ReadName("Прізвище підприємця: ");
-        string personId = ReadByPattern("Ідентифікатор підприємця (ABC-123): ", PersonIdPattern, "Формат: три великі літери, дефіс і 3-7 цифр.");
-
-        service.Add(new Entrepreneur(firstName, lastName, personId));
-        Console.WriteLine("Підприємця додано.");
+        Person person = inputHandler.CreatePerson();
+        service.Add(person);
+        Console.WriteLine("Запис додано.");
     }
 
     private void ShowFourthCourseSpringStudents()
@@ -111,16 +123,14 @@ public sealed class ConsoleMenu
 
     private void SearchByLastName()
     {
-        string lastName = ReadName("Прізвище для пошуку: ");
+        string lastName = ConsoleInput.ReadName("Прізвище для пошуку: ");
         Person[] people = service.FindByLastName(lastName);
         PrintSearchResult(people);
     }
 
     private void SearchById()
     {
-        Console.Write("Унікальний ідентифікатор: ");
-        string uniqueId = (Console.ReadLine() ?? string.Empty).Trim();
-        Person? person = service.FindById(uniqueId);
+        Person? person = service.FindById(ConsoleInput.ReadRequiredText("Унікальний ідентифікатор: "));
 
         if (person is null)
             Console.WriteLine("Запис не знайдено.");
@@ -130,71 +140,27 @@ public sealed class ConsoleMenu
 
     private void DeleteById()
     {
-        Console.Write("Унікальний ідентифікатор для видалення: ");
-        string uniqueId = (Console.ReadLine() ?? string.Empty).Trim();
+        string uniqueId = ConsoleInput.ReadRequiredText("Унікальний ідентифікатор для видалення: ");
         Console.WriteLine(service.DeleteById(uniqueId) ? "Запис видалено." : "Запис не знайдено.");
     }
 
-    private void DemonstrateParachuteJump()
+    private void ExecutePersonAction(IPersonAction action)
     {
-        Console.Write("Унікальний ідентифікатор особи: ");
-        string uniqueId = (Console.ReadLine() ?? string.Empty).Trim();
-        Person? person = service.FindById(uniqueId);
+        Person? person = service.FindById(ConsoleInput.ReadRequiredText("Унікальний ідентифікатор особи: "));
 
-        if (person is not IParachuteJump parachutist)
+        if (person is null)
         {
-            Console.WriteLine("Особа не знайдена або не має цієї навички.");
+            Console.WriteLine("Особа не знайдена.");
             return;
         }
 
-        parachutist.JumpWithParachute();
-        Console.WriteLine($"{person.FirstName} {person.LastName} виконав(ла) стрибок із парашутом.");
-    }
-
-    private static string ReadName(string prompt)
-    {
-        return ReadByPattern(prompt, NamePattern, "Використовуйте лише літери, апостроф або дефіс.");
-    }
-
-    private static int ReadCourse()
-    {
-        while (true)
+        if (!action.CanExecute(person))
         {
-            Console.Write("Курс (1-6): ");
-            string value = (Console.ReadLine() ?? string.Empty).Trim();
-
-            if (Regex.IsMatch(value, "^[1-6]$") && int.TryParse(value, out int course))
-                return course;
-
-            Console.WriteLine("Курс має бути числом від 1 до 6.");
+            Console.WriteLine("Ця дія недоступна для обраної особи.");
+            return;
         }
-    }
 
-    private static DateTime ReadBirthDate()
-    {
-        while (true)
-        {
-            string value = ReadByPattern("Дата народження (ДД.ММ.РРРР): ", @"^\d{2}\.\d{2}\.\d{4}$", "Формат: ДД.ММ.РРРР.");
-
-            if (DateTime.TryParseExact(value, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime birthDate))
-                return birthDate;
-
-            Console.WriteLine("Такої календарної дати не існує.");
-        }
-    }
-
-    private static string ReadByPattern(string prompt, string pattern, string errorMessage)
-    {
-        while (true)
-        {
-            Console.Write(prompt);
-            string value = (Console.ReadLine() ?? string.Empty).Trim();
-
-            if (Regex.IsMatch(value, pattern))
-                return value;
-
-            Console.WriteLine(errorMessage);
-        }
+        Console.WriteLine(action.Execute(person));
     }
 
     private static void PrintSearchResult(Person[] people)
@@ -222,16 +188,11 @@ public sealed class ConsoleMenu
 
     private static void PrintPerson(Person person)
     {
+        PersonRecord record = person.ToRecord();
         Console.WriteLine();
-        Console.WriteLine($"Тип: {person.GetType().Name}");
-        Console.WriteLine($"Прізвище: {person.LastName}");
-        Console.WriteLine($"Ім'я: {person.FirstName}");
-        Console.WriteLine($"Ідентифікатор: {person.UniqueId}");
+        Console.WriteLine($"Тип: {record.TypeName}");
 
-        if (person is Student student)
-        {
-            Console.WriteLine($"Курс: {student.Course}");
-            Console.WriteLine($"Дата народження: {student.BirthDate:dd.MM.yyyy}");
-        }
+        for (int i = 0; i < record.AttributeNames.Length; i++)
+            Console.WriteLine($"{record.AttributeNames[i]}: {record.AttributeValues[i]}");
     }
 }
