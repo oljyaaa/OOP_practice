@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Lab32Variant8;
 
 public class BinaryTree<T> : IEnumerable<T>
-    where T : class, IComparable<T>
+    where T : class
 {
     public sealed class Node
     {
@@ -20,8 +20,14 @@ public class BinaryTree<T> : IEnumerable<T>
     }
 
     private Node root;
+    private readonly IComparer<T> comparer;
 
     public Node Root => root;
+
+    public BinaryTree(IComparer<T> comparer = null)
+    {
+        this.comparer = comparer ?? Comparer<T>.Default;
+    }
 
     public void Add(T data)
     {
@@ -31,12 +37,12 @@ public class BinaryTree<T> : IEnumerable<T>
         root = AddRecursive(root, data);
     }
 
-    private static Node AddRecursive(Node node, T data)
+    private Node AddRecursive(Node node, T data)
     {
         if (node is null)
             return new Node(data);
 
-        if (data.CompareTo(node.Data) < 0)
+        if (comparer.Compare(data, node.Data) < 0)
             node.Left = AddRecursive(node.Left, data);
         else
             node.Right = AddRecursive(node.Right, data);

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Lab32Variant8;
 
 public class PostOrderEnumerator<T> : IEnumerator<T>
-    where T : class, IComparable<T>
+    where T : class
 {
     private readonly List<T> items = new();
     private int position = -1;
