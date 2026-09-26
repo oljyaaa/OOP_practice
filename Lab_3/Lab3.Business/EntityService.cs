@@ -65,6 +65,24 @@ public sealed class EntityService
     public void SaveStringsAsCollection(StorageOptions options) => Save(_strings.Select(ToEntity).ToList(), options);
     public void SaveStringsAsArray(StorageOptions options) => Save(_strings.Select(ToEntity).ToArray(), options);
 
+    public void CreateEmptyFile(StoredEntityKind entityKind, StorageOptions options)
+    {
+        switch (entityKind)
+        {
+            case StoredEntityKind.Student: Create<StudentEntity>(options); break;
+            case StoredEntityKind.Baker: Create<BakerEntity>(options); break;
+            case StoredEntityKind.Entrepreneur: Create<EntrepreneurEntity>(options); break;
+            case StoredEntityKind.LaboratoryString: Create<StringEntity>(options); break;
+            default: throw new EntityValidationException("Невідомий тип сутності.");
+        }
+    }
+
+    public void DeleteFile(string filePath)
+    {
+        try { _context.Delete(filePath); }
+        catch (Exception exception) { throw new StorageOperationException("Не вдалося видалити файл.", exception); }
+    }
+
     public void LoadStudents(StorageOptions options) => _students = Load<StudentEntity>(options).Select(ToModel).ToList();
     public void LoadBakers(StorageOptions options) => _bakers = Load<BakerEntity>(options).Select(ToModel).ToList();
     public void LoadEntrepreneurs(StorageOptions options) => _entrepreneurs = Load<EntrepreneurEntity>(options).Select(ToModel).ToList();
@@ -74,15 +92,27 @@ public sealed class EntityService
     private void Save<T>(IReadOnlyCollection<T> entities, StorageOptions options) where T : class, new()
     {
         try { _context.Save(entities, options.FilePath, ToDataFormat(options.Format)); }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or ArgumentException or InvalidOperationException)
-        { throw new StorageOperationException("Не вдалося зберегти дані у файл.", exception); }
+        catch (Exception exception) { throw new StorageOperationException("Не вдалося оновити дані у файлі.", exception); }
+        finally { Close(options.FilePath); }
     }
 
     private List<T> Load<T>(StorageOptions options) where T : class, new()
     {
         try { return _context.Load<T>(options.FilePath, ToDataFormat(options.Format)); }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or ArgumentException or InvalidOperationException)
-        { throw new StorageOperationException("Не вдалося прочитати дані з файлу.", exception); }
+        catch (Exception exception) { throw new StorageOperationException("Не вдалося відкрити або прочитати дані з файлу.", exception); }
+        finally { Close(options.FilePath); }
+    }
+
+    private void Create<T>(StorageOptions options) where T : class, new()
+    {
+        try { _context.Create<T>(options.FilePath, ToDataFormat(options.Format)); }
+        catch (Exception exception) { throw new StorageOperationException("Не вдалося створити файл.", exception); }
+        finally { Close(options.FilePath); }
+    }
+
+    private void Close(string filePath)
+    {
+        if (!string.IsNullOrWhiteSpace(filePath)) _context.Close(filePath);
     }
 
     private static SerializationFormat ToDataFormat(FileFormat format) => format switch

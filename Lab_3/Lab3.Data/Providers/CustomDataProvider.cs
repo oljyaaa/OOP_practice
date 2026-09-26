@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Reflection;
 using System.Text;
 
 namespace Lab3.Data.Providers;
@@ -12,7 +11,7 @@ public sealed class CustomDataProvider : DataProvider
     public override void Serialize<T>(IReadOnlyCollection<T> entities, string filePath)
     {
         EnsureFilePath(filePath);
-        var properties = SerializableProperties<T>();
+        var properties = SerializableProperties.For<T>();
         using var writer = new StreamWriter(filePath, false, Encoding.UTF8);
         writer.WriteLine(string.Join('|', properties.Select(property => property.Name)));
         foreach (var entity in entities)
@@ -28,7 +27,7 @@ public sealed class CustomDataProvider : DataProvider
         var lines = File.ReadAllLines(filePath, Encoding.UTF8);
         if (lines.Length == 0 || string.IsNullOrWhiteSpace(lines[0])) return [];
 
-        var properties = SerializableProperties<T>();
+        var properties = SerializableProperties.For<T>();
         if (!lines[0].Split('|').SequenceEqual(properties.Select(property => property.Name)))
         {
             throw new InvalidDataException("Файл не відповідає очікуваній структурі сутності.");
@@ -51,11 +50,6 @@ public sealed class CustomDataProvider : DataProvider
         }
         return result;
     }
-
-    private static PropertyInfo[] SerializableProperties<T>() => typeof(T).GetProperties()
-        .Where(property => property.CanRead && property.CanWrite)
-        .OrderBy(property => property.Name, StringComparer.Ordinal)
-        .ToArray();
 
     private static string ToText(object? value) => value switch
     {

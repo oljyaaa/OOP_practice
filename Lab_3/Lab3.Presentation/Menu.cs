@@ -23,6 +23,7 @@ public sealed class Menu
             Console.WriteLine("2 - Студенти");
             Console.WriteLine("3 - Пекарі");
             Console.WriteLine("4 - Підприємці");
+            Console.WriteLine("5 - Операції з файлами");
             Console.WriteLine("0 - Вихід");
             Console.Write("Ваш вибір: ");
             switch (Console.ReadLine())
@@ -31,9 +32,10 @@ public sealed class Menu
                 case "2": Execute(StudentMenu); break;
                 case "3": Execute(BakerMenu); break;
                 case "4": Execute(EntrepreneurMenu); break;
+                case "5": Execute(FileMenu); break;
                 case "0": return;
                 case null: return;
-                default: Console.WriteLine("Оберіть пункт від 0 до 4."); break;
+                default: Console.WriteLine("Оберіть пункт від 0 до 5."); break;
             }
         }
     }
@@ -150,6 +152,30 @@ public sealed class Menu
         }
     }
 
+    private void FileMenu()
+    {
+        while (true)
+        {
+            Console.WriteLine("\n--- Життєвий цикл файла ---");
+            Console.WriteLine("1 - Створити порожній файл; 2 - Видалити файл; 0 - Назад");
+            Console.Write("Ваш вибір: ");
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    _service.CreateEmptyFile(ReadStoredEntityKind(), ReadStorageOptions());
+                    Console.WriteLine("Порожній файл створено й закрито.");
+                    break;
+                case "2":
+                    _service.DeleteFile(ReadRequired("Ім'я або повний шлях до файлу"));
+                    Console.WriteLine("Файл видалено.");
+                    break;
+                case "0": return;
+                case null: return;
+                default: Console.WriteLine("Оберіть пункт 0, 1 або 2."); break;
+            }
+        }
+    }
+
     private void FindCharacter()
     {
         var index = ReadIndex();
@@ -229,6 +255,19 @@ public sealed class Menu
             _ => throw new EntityValidationException("Формат має бути від 1 до 4.")
         };
         return new StorageOptions(ReadRequired("Ім'я або повний шлях до файлу"), format);
+    }
+
+    private static StoredEntityKind ReadStoredEntityKind()
+    {
+        Console.WriteLine("Сутність: 1 - студент, 2 - пекар, 3 - підприємець, 4 - рядок.");
+        return ReadRequired("Номер сутності") switch
+        {
+            "1" => StoredEntityKind.Student,
+            "2" => StoredEntityKind.Baker,
+            "3" => StoredEntityKind.Entrepreneur,
+            "4" => StoredEntityKind.LaboratoryString,
+            _ => throw new EntityValidationException("Тип сутності має бути від 1 до 4.")
+        };
     }
 
     private static int ReadIndex() => int.Parse(ReadRequired("Індекс рядка (від 0)"), CultureInfo.InvariantCulture);
