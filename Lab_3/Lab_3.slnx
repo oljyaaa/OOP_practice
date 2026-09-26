@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Lab3.App/Lab3.App.csproj" />
+  <Project Path="Lab3.Business/Lab3.Business.csproj" />
+  <Project Path="Lab3.Data/Lab3.Data.csproj" />
+  <Project Path="Lab3.Presentation/Lab3.Presentation.csproj" />
+</Solution>
