@@ -19,7 +19,6 @@ public class PostOrderEnumerator<T> : IEnumerator<T>
     {
         if (node is null)
             return;
-
         // postorder: ліве піддерево -> праве піддерево -> корінь
         FillPostOrder(node.Left);
         FillPostOrder(node.Right);

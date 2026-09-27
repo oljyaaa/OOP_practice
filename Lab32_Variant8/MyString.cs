@@ -13,34 +13,31 @@ public class MyString : IComparable<MyString>
         Value = value ?? string.Empty;
     }
 
-    // Пошук заданого символу. Повертає індекс або -1.
-    public int FindCharacter(char symbol)
+    public int FindCharacter(char symbol)  // Пошук заданого символу
     {
         return Value.IndexOf(symbol);
     }
-
-    // Зміна порядку символів на протилежний.
-    public void Reverse()
+    
+    public void Reverse() // Зміна порядку символів на протилежний
     {
         char[] chars = Value.ToCharArray();
         Array.Reverse(chars);
         Value = new string(chars);
     }
 
-    // Додавання нового рядка до існуючого.
-    public void Append(string text)
+    public void Append(string text)    // Додавання нового рядка до існуючого
     {
         Value += text ?? string.Empty;
     }
 
-    // Виведення рядка.
-    public void Print()
+
+    public void Print()    // Виведення рядка
     {
         Console.WriteLine($"Значення: \"{Value}\", довжина: {Length}");
     }
 
-    // Порівняння за довжиною, а при однаковій довжині — за значенням.
-    public int CompareTo(MyString other)
+
+    public int CompareTo(MyString other)    // Порівняння за довжиною, однакова довжина — значення
     {
         if (other is null)
             return 1;

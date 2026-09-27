@@ -9,8 +9,6 @@ internal class Program
     static void Main()
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
-
-        // За варіантом потрібно 4 об'єкти.
         MyString s1 = new("Hello");
         MyString s2 = new("Programming");
         MyString s3 = new("CSharp");
@@ -23,7 +21,7 @@ internal class Program
         DemonstrateSorting(s1, s2, s3, s4);
         DemonstrateBinaryTree(s1, s2, s3, s4);
 
-        Console.WriteLine("\n=== КОРОТКЕ ПОРІВНЯННЯ ===");
+        Console.WriteLine("\n=== 7. ВИСНОВКИ ===");
         Console.WriteLine("Масив: фіксований розмір; для додавання/видалення треба створювати новий масив.");
         Console.WriteLine("ArrayList: розмір змінюється, але елементи зберігаються як object і немає типобезпечності.");
         Console.WriteLine("List<MyString>: розмір змінюється і колекція типобезпечна.");
@@ -56,21 +54,21 @@ internal class Program
         MyString[] array = { s1, s2, s3, s4 };
         PrintArray(array, "Початковий масив:");
 
-        // Додавання: масив фіксований, тому створюємо більший.
+        // масив фіксований, тому створюємо більший
         array = AddToArray(array, new MyString("AddedToArray"));
         PrintArray(array, "Після додавання:");
 
-        // Оновлення.
+        // Оновлення
         array[0] = new MyString("UpdatedArrayItem");
         PrintArray(array, "Після оновлення першого елемента:");
 
-        // Пошук.
+        // Пошук
         int foundIndex = FindInArray(array, "Programming");
         Console.WriteLine(foundIndex >= 0
             ? $"Пошук: Programming знайдено за індексом {foundIndex}."
             : "Пошук: Programming не знайдено.");
 
-        // Видалення.
+        // Видалення
         array = RemoveAt(array, 1);
         PrintArray(array, "Після видалення елемента з індексом 1:");
     }
