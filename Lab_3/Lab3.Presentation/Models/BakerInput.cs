@@ -1,8 +1,9 @@
 namespace Lab3.Presentation.Models;
 
-public sealed class BakerInput
+// PL-модель пекаря: дані, введені користувачем
+public class BakerInput
 {
-    public string Surname { get; init; } = string.Empty;
-    public string FirstName { get; init; } = string.Empty;
-    public string BakeryName { get; init; } = string.Empty;
+    public string Surname { get; set; } = "";
+    public string FirstName { get; set; } = "";
+    public string Bakery { get; set; } = "";
 }

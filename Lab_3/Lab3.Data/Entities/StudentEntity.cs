@@ -1,11 +1,34 @@
 namespace Lab3.Data.Entities;
 
-// Entity exists only in DAL. BLL and PL use their own models.
-public sealed class StudentEntity
+// Сутність "Студент" (частина 2, варіант 8).
+// Дата народження зберігається у файлі у форматі ХХ.ХХ.ХХХХ (дд.ММ.рррр).
+public class StudentEntity : IEntity
 {
-    public string Surname { get; set; } = string.Empty;
-    public string FirstName { get; set; } = string.Empty;
+    public string Surname { get; set; } = "";
+    public string FirstName { get; set; } = "";
     public int Course { get; set; }
-    public string StudentCardNumber { get; set; } = string.Empty;
-    public DateTime BirthDate { get; set; }
+    public string StudentCard { get; set; } = "";
+    public string BirthDate { get; set; } = "";
+
+    // Повертає поля студента для бінарного та користувацького формату
+    public Dictionary<string, string> ToFields()
+    {
+        Dictionary<string, string> fields = new Dictionary<string, string>();
+        fields["Surname"] = Surname;
+        fields["FirstName"] = FirstName;
+        fields["Course"] = Course.ToString();
+        fields["StudentCard"] = StudentCard;
+        fields["BirthDate"] = BirthDate;
+        return fields;
+    }
+
+    // Відновлює поля студента зі словника
+    public void FromFields(Dictionary<string, string> fields)
+    {
+        Surname = fields["Surname"];
+        FirstName = fields["FirstName"];
+        Course = int.Parse(fields["Course"]);
+        StudentCard = fields["StudentCard"];
+        BirthDate = fields["BirthDate"];
+    }
 }

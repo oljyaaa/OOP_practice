@@ -1,23 +1,33 @@
 using System.Xml.Serialization;
+using Lab3.Data.Entities;
 
 namespace Lab3.Data.Providers;
 
-public sealed class XmlDataProvider : DataProvider
+// Провайдер XML-серіалізації (XmlSerializer)
+public class XmlDataProvider : DataProvider
 {
-    public override SerializationFormat Format => SerializationFormat.Xml;
-
-    public override void Serialize<T>(IReadOnlyCollection<T> entities, string filePath)
+    // Записує список об'єктів у XML-файл
+    public override void Write<T>(List<T> items, string filePath)
     {
-        EnsureFilePath(filePath);
-        var serializer = new XmlSerializer(typeof(List<T>));
-        using var stream = File.Create(filePath);
-        serializer.Serialize(stream, entities.ToList());
+        XmlSerializer serializer = new XmlSerializer(typeof(List<T>));
+        using (FileStream stream = new FileStream(filePath, FileMode.Create))
+        {
+            serializer.Serialize(stream, items);
+        }
     }
 
-    public override List<T> Deserialize<T>(string filePath)
+    // Читає список об'єктів з XML-файлу
+    public override List<T> Read<T>(string filePath)
     {
-        var serializer = new XmlSerializer(typeof(List<T>));
-        using var stream = File.OpenRead(filePath);
-        return (List<T>?)serializer.Deserialize(stream) ?? [];
+        XmlSerializer serializer = new XmlSerializer(typeof(List<T>));
+        using (FileStream stream = new FileStream(filePath, FileMode.Open))
+        {
+            List<T>? items = (List<T>?)serializer.Deserialize(stream);
+            if (items == null)
+            {
+                return new List<T>();
+            }
+            return items;
+        }
     }
 }

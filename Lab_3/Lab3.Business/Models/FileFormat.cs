@@ -1,5 +1,6 @@
 namespace Lab3.Business.Models;
 
+// Формат файлу, який обирає користувач
 public enum FileFormat
 {
     Binary = 1,

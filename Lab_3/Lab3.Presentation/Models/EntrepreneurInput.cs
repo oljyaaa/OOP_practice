@@ -1,8 +1,9 @@
 namespace Lab3.Presentation.Models;
 
-public sealed class EntrepreneurInput
+// PL-модель підприємця: дані, введені користувачем
+public class EntrepreneurInput
 {
-    public string Surname { get; init; } = string.Empty;
-    public string FirstName { get; init; } = string.Empty;
-    public string BusinessName { get; init; } = string.Empty;
+    public string Surname { get; set; } = "";
+    public string FirstName { get; set; } = "";
+    public string Business { get; set; } = "";
 }

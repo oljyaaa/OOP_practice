@@ -1,8 +1,13 @@
-﻿using Lab3.Presentation;
+using Lab3.Presentation;
 
 namespace Lab3.App;
 
-internal static class Program
+// Точка входу в програму
+internal class Program
 {
-    private static void Main() => Menu.MainMenu();
+    // Запускає застосування: викликає лише головне меню
+    private static void Main()
+    {
+        Menu.MainMenu();
+    }
 }

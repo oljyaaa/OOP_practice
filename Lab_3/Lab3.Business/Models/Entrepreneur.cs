@@ -1,9 +1,19 @@
 namespace Lab3.Business.Models;
 
-public sealed class Entrepreneur
+// Підприємець (BLL-модель)
+public class Entrepreneur : Person
 {
-    public string Surname { get; init; } = string.Empty;
-    public string FirstName { get; init; } = string.Empty;
-    public string BusinessName { get; init; } = string.Empty;
-    public string JumpWithParachute() => $"Підприємець {Surname} {FirstName} стрибає з парашутом.";
+    public string Business { get; set; }
+
+    // Створює підприємця
+    public Entrepreneur(string surname, string firstName, string business) : base(surname, firstName)
+    {
+        Business = business;
+    }
+
+    // Повертає інформацію про підприємця
+    public override string GetInfo()
+    {
+        return Surname + " " + FirstName + ", бізнес: " + Business;
+    }
 }

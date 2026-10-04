@@ -1,19 +1,35 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using Lab3.Data.Entities;
 
 namespace Lab3.Data.Providers;
 
-public sealed class JsonDataProvider : DataProvider
+// Провайдер JSON-серіалізації (System.Text.Json)
+public class JsonDataProvider : DataProvider
 {
-    private static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
-
-    public override SerializationFormat Format => SerializationFormat.Json;
-
-    public override void Serialize<T>(IReadOnlyCollection<T> entities, string filePath)
+    // WriteIndented - гарні відступи у файлі; Encoder - щоб кирилиця не перетворювалась на \uXXXX
+    private readonly JsonSerializerOptions options = new JsonSerializerOptions
     {
-        EnsureFilePath(filePath);
-        File.WriteAllText(filePath, JsonSerializer.Serialize(entities, Options));
+        WriteIndented = true,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
+
+    // Записує список об'єктів у JSON-файл
+    public override void Write<T>(List<T> items, string filePath)
+    {
+        string json = JsonSerializer.Serialize(items, options);
+        File.WriteAllText(filePath, json);
     }
 
-    public override List<T> Deserialize<T>(string filePath) =>
-        JsonSerializer.Deserialize<List<T>>(File.ReadAllText(filePath), Options) ?? [];
+    // Читає список об'єктів з JSON-файлу
+    public override List<T> Read<T>(string filePath)
+    {
+        string json = File.ReadAllText(filePath);
+        List<T>? items = JsonSerializer.Deserialize<List<T>>(json, options);
+        if (items == null)
+        {
+            return new List<T>();
+        }
+        return items;
+    }
 }

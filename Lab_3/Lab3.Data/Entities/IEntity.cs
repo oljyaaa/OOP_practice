@@ -1,0 +1,12 @@
+namespace Lab3.Data.Entities;
+
+// Спільний контракт для всіх сутностей DAL.
+// Бінарний і користувацький провайдери працюють з полями сутності як з парами "назва = значення".
+public interface IEntity
+{
+    // Повертає всі поля сутності у вигляді словника "назва поля -> текстове значення"
+    Dictionary<string, string> ToFields();
+
+    // Заповнює поля сутності значеннями зі словника
+    void FromFields(Dictionary<string, string> fields);
+}

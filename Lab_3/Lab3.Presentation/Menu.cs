@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text;
 using Lab3.Business;
 using Lab3.Business.Exceptions;
 using Lab3.Business.Models;
@@ -6,286 +7,465 @@ using Lab3.Presentation.Models;
 
 namespace Lab3.Presentation;
 
-public sealed class Menu
+// Найвищий рівень (PL): введення і виведення даних через консоль.
+// Menu викликає методи EntityService і передає туди дані користувача.
+public static class Menu
 {
-    private readonly EntityService _service;
+    private static readonly EntityService service = new EntityService();
 
-    private Menu(EntityService service) => _service = service;
-
-    public static void MainMenu() => new Menu(EntityService.CreateDefault()).Run();
-
-    private void Run()
+    // Головне меню програми
+    public static void MainMenu()
     {
+        Console.InputEncoding = Encoding.UTF8;
+        Console.OutputEncoding = Encoding.UTF8;
+
         while (true)
         {
-            Console.WriteLine("\n=== Лабораторна робота 3.3, варіант 8 ===");
-            Console.WriteLine("1 - Рядки: частина 1 (серіалізація)");
+            Console.WriteLine();
+            Console.WriteLine("=== Лабораторна робота 3.3, варіант 8 ===");
+            Console.WriteLine("1 - Частина 1: рядки і серіалізація");
             Console.WriteLine("2 - Студенти");
             Console.WriteLine("3 - Пекарі");
             Console.WriteLine("4 - Підприємці");
-            Console.WriteLine("5 - Операції з файлами");
+            Console.WriteLine("5 - Створення та видалення файлів");
             Console.WriteLine("0 - Вихід");
-            Console.Write("Ваш вибір: ");
-            switch (Console.ReadLine())
+            string choice = ReadText("Ваш вибір");
+
+            if (choice == "0")
             {
-                case "1": Execute(StringMenu); break;
-                case "2": Execute(StudentMenu); break;
-                case "3": Execute(BakerMenu); break;
-                case "4": Execute(EntrepreneurMenu); break;
-                case "5": Execute(FileMenu); break;
-                case "0": return;
-                case null: return;
-                default: Console.WriteLine("Оберіть пункт від 0 до 5."); break;
+                return;
+            }
+
+            // Усі винятки обробляються тут, а не в місці їх виникнення
+            try
+            {
+                switch (choice)
+                {
+                    case "1": StringMenu(); break;
+                    case "2": StudentMenu(); break;
+                    case "3": BakerMenu(); break;
+                    case "4": EntrepreneurMenu(); break;
+                    case "5": FileMenu(); break;
+                    default: Console.WriteLine("Немає такого пункту."); break;
+                }
+            }
+            catch (EntityValidationException exception)
+            {
+                Console.WriteLine("Помилка введення: " + exception.Message);
+            }
+            catch (EntityNotFoundException exception)
+            {
+                Console.WriteLine("Не знайдено: " + exception.Message);
+            }
+            catch (StorageOperationException exception)
+            {
+                Console.WriteLine("Помилка файлу: " + exception.Message + " " + exception.InnerException?.Message);
             }
         }
     }
 
-    private void StringMenu()
+    // ===================== Частина 1: рядки =====================
+
+    // Меню роботи з рядками та серіалізацією масиву і колекції
+    private static void StringMenu()
     {
-        while (true)
+        Console.WriteLine();
+        Console.WriteLine("--- Рядки ---");
+        Console.WriteLine("1 - Вивести рядки");
+        Console.WriteLine("2 - Додати рядок");
+        Console.WriteLine("3 - Знайти символ у рядку");
+        Console.WriteLine("4 - Змінити порядок символів на протилежний");
+        Console.WriteLine("5 - Додати новий рядок до існуючого");
+        Console.WriteLine("6 - Серіалізувати масив рядків у файл");
+        Console.WriteLine("7 - Відновити рядки з файлу в новий масив");
+        Console.WriteLine("8 - Серіалізувати колекцію рядків у файл");
+        Console.WriteLine("9 - Відновити колекцію рядків з файлу");
+        Console.WriteLine("10 - Порівняти серіалізацію масиву і колекції");
+        string choice = ReadText("Ваш вибір");
+
+        switch (choice)
         {
-            Console.WriteLine("\n--- Рядок, варіант 8 ---");
-            Console.WriteLine("1 - Показати рядки");
-            Console.WriteLine("2 - Додати рядок");
-            Console.WriteLine("3 - Знайти символ");
-            Console.WriteLine("4 - Розвернути рядок");
-            Console.WriteLine("5 - Додати текст до рядка");
-            Console.WriteLine("6 - Зберегти масив рядків");
-            Console.WriteLine("7 - Відновити новий масив рядків");
-            Console.WriteLine("8 - Зберегти колекцію рядків");
-            Console.WriteLine("9 - Відновити колекцію рядків");
-            Console.WriteLine("0 - Назад");
-            Console.Write("Ваш вибір: ");
-            switch (Console.ReadLine())
-            {
-                case "1": PrintStrings(_service.Strings); break;
-                case "2": _service.AddString(ReadString().Value); break;
-                case "3": FindCharacter(); break;
-                case "4": _service.ReverseString(ReadIndex()); break;
-                case "5": _service.AppendToString(ReadIndex(), ReadRequired("Текст для додавання")); break;
-                case "6": _service.SaveStringsAsArray(ReadStorageOptions()); Console.WriteLine("Масив збережено."); break;
-                case "7": PrintStrings(_service.LoadStringsAsArray(ReadStorageOptions())); break;
-                case "8": _service.SaveStringsAsCollection(ReadStorageOptions()); Console.WriteLine("Колекцію збережено."); break;
-                case "9": _service.LoadStringsAsCollection(ReadStorageOptions()); Console.WriteLine("Колекцію відновлено."); break;
-                case "0": return;
-                case null: return;
-                default: Console.WriteLine("Оберіть пункт від 0 до 9."); break;
-            }
+            case "1":
+                PrintStrings(service.GetStrings().ToArray());
+                break;
+            case "2":
+                service.AddString(ReadText("Новий рядок"));
+                Console.WriteLine("Рядок додано.");
+                break;
+            case "3":
+                int index = ReadNumber("Номер рядка (з 0)");
+                char symbol = ReadSymbol();
+                int position = service.FindSymbol(index, symbol);
+                if (position >= 0)
+                {
+                    Console.WriteLine("Символ '" + symbol + "' знайдено на позиції " + position + ".");
+                }
+                else
+                {
+                    Console.WriteLine("Символ '" + symbol + "' не знайдено.");
+                }
+                break;
+            case "4":
+                service.ReverseString(ReadNumber("Номер рядка (з 0)"));
+                Console.WriteLine("Рядок розвернуто.");
+                break;
+            case "5":
+                int stringIndex = ReadNumber("Номер рядка (з 0)");
+                service.AppendToString(stringIndex, ReadText("Текст, який треба додати"));
+                Console.WriteLine("Текст додано.");
+                break;
+            case "6":
+                service.SaveStringsAsArray(ReadStorageOptions());
+                Console.WriteLine("Масив серіалізовано.");
+                break;
+            case "7":
+                MyString[] newArray = service.LoadStringsAsArray(ReadStorageOptions());
+                Console.WriteLine("Новий масив, відновлений з файлу:");
+                PrintStrings(newArray);
+                break;
+            case "8":
+                service.SaveStringsAsCollection(ReadStorageOptions());
+                Console.WriteLine("Колекцію серіалізовано.");
+                break;
+            case "9":
+                service.LoadStringsAsCollection(ReadStorageOptions());
+                Console.WriteLine("Колекцію відновлено з файлу:");
+                PrintStrings(service.GetStrings().ToArray());
+                break;
+            case "10":
+                CompareArrayWithCollection();
+                break;
+            default:
+                Console.WriteLine("Немає такого пункту.");
+                break;
         }
     }
 
-    private void StudentMenu()
+    // Порівнює масив і колекцію після серіалізації та десеріалізації
+    private static void CompareArrayWithCollection()
     {
-        while (true)
+        FileFormat format = ReadFormat();
+        string arrayFile = ReadText("Файл для масиву");
+        string collectionFile = ReadText("Файл для колекції");
+
+        ComparisonResult result = service.CompareArrayWithCollection(
+            new StorageOptions(arrayFile, format), new StorageOptions(collectionFile, format));
+
+        Console.WriteLine("Масив (MyString[]), відновлений з файлу:");
+        PrintStrings(result.RestoredArray);
+        Console.WriteLine("Колекція (List<MyString>), відновлена з файлу:");
+        PrintStrings(result.RestoredCollection.ToArray());
+
+        if (result.AreEqual)
         {
-            Console.WriteLine("\n--- Студенти ---");
-            Console.WriteLine("1 - Показати всіх");
-            Console.WriteLine("2 - Додати");
-            Console.WriteLine("3 - Знайти за студентським квитком");
-            Console.WriteLine("4 - Видалити за студентським квитком");
-            Console.WriteLine("5 - Зберегти у файл");
-            Console.WriteLine("6 - Прочитати з файлу");
-            Console.WriteLine("7 - Порахувати студентів 4 курсу, народжених навесні");
-            Console.WriteLine("0 - Назад");
-            Console.Write("Ваш вибір: ");
-            switch (Console.ReadLine())
-            {
-                case "1": PrintStudents(_service.Students); break;
-                case "2": _service.AddStudent(ReadStudent()); Console.WriteLine("Студента додано."); break;
-                case "3": PrintStudents([_service.FindStudent(ReadRequired("Номер квитка"))]); break;
-                case "4": _service.RemoveStudent(ReadRequired("Номер квитка")); Console.WriteLine("Студента видалено."); break;
-                case "5": _service.SaveStudents(ReadStorageOptions()); Console.WriteLine("Студентів збережено."); break;
-                case "6": _service.LoadStudents(ReadStorageOptions()); Console.WriteLine("Студентів прочитано з файлу."); break;
-                case "7": PrintSpringStudents(); break;
-                case "0": return;
-                case null: return;
-                default: Console.WriteLine("Оберіть пункт від 0 до 7."); break;
-            }
+            Console.WriteLine("Результат: дані однакові. Масив має фіксований розмір, а колекцію можна змінювати (Add/Remove).");
+        }
+        else
+        {
+            Console.WriteLine("Результат: дані відрізняються.");
         }
     }
 
-    private void BakerMenu()
+    // Виводить рядки з їхніми номерами
+    private static void PrintStrings(MyString[] items)
     {
-        while (true)
+        for (int i = 0; i < items.Length; i++)
         {
-            Console.WriteLine("\n--- Пекарі ---");
-            Console.WriteLine("1 - Показати всіх; 2 - Додати; 3 - Знайти; 4 - Видалити");
-            Console.WriteLine("5 - Стрибнути з парашутом; 6 - Зберегти; 7 - Прочитати; 0 - Назад");
-            Console.Write("Ваш вибір: ");
-            switch (Console.ReadLine())
-            {
-                case "1": PrintBakers(); break;
-                case "2": _service.AddBaker(ReadBaker()); Console.WriteLine("Пекаря додано."); break;
-                case "3": Console.WriteLine(_service.FindBaker(ReadRequired("Прізвище")).JumpWithParachute()); break;
-                case "4": _service.RemoveBaker(ReadRequired("Прізвище")); Console.WriteLine("Пекаря видалено."); break;
-                case "5": Console.WriteLine(_service.FindBaker(ReadRequired("Прізвище")).JumpWithParachute()); break;
-                case "6": _service.SaveBakers(ReadStorageOptions()); Console.WriteLine("Пекарів збережено."); break;
-                case "7": _service.LoadBakers(ReadStorageOptions()); Console.WriteLine("Пекарів прочитано з файлу."); break;
-                case "0": return;
-                case null: return;
-                default: Console.WriteLine("Оберіть пункт від 0 до 7."); break;
-            }
+            Console.WriteLine("[" + i + "] " + items[i].GetInfo());
         }
     }
 
-    private void EntrepreneurMenu()
+    // ===================== Частина 2: студенти =====================
+
+    // Меню роботи зі студентами
+    private static void StudentMenu()
     {
-        while (true)
+        Console.WriteLine();
+        Console.WriteLine("--- Студенти ---");
+        Console.WriteLine("1 - Вивести всіх");
+        Console.WriteLine("2 - Додати студента");
+        Console.WriteLine("3 - Знайти за студентським квитком");
+        Console.WriteLine("4 - Видалити за студентським квитком");
+        Console.WriteLine("5 - Зберегти у файл");
+        Console.WriteLine("6 - Прочитати з файлу");
+        Console.WriteLine("7 - Кількість студентів 4-го курсу, народжених навесні (з файлу)");
+        Console.WriteLine("8 - Стрибнути з парашутом");
+        string choice = ReadText("Ваш вибір");
+
+        switch (choice)
         {
-            Console.WriteLine("\n--- Підприємці ---");
-            Console.WriteLine("1 - Показати всіх; 2 - Додати; 3 - Знайти; 4 - Видалити");
-            Console.WriteLine("5 - Стрибнути з парашутом; 6 - Зберегти; 7 - Прочитати; 0 - Назад");
-            Console.Write("Ваш вибір: ");
-            switch (Console.ReadLine())
-            {
-                case "1": PrintEntrepreneurs(); break;
-                case "2": _service.AddEntrepreneur(ReadEntrepreneur()); Console.WriteLine("Підприємця додано."); break;
-                case "3": Console.WriteLine(_service.FindEntrepreneur(ReadRequired("Прізвище")).JumpWithParachute()); break;
-                case "4": _service.RemoveEntrepreneur(ReadRequired("Прізвище")); Console.WriteLine("Підприємця видалено."); break;
-                case "5": Console.WriteLine(_service.FindEntrepreneur(ReadRequired("Прізвище")).JumpWithParachute()); break;
-                case "6": _service.SaveEntrepreneurs(ReadStorageOptions()); Console.WriteLine("Підприємців збережено."); break;
-                case "7": _service.LoadEntrepreneurs(ReadStorageOptions()); Console.WriteLine("Підприємців прочитано з файлу."); break;
-                case "0": return;
-                case null: return;
-                default: Console.WriteLine("Оберіть пункт від 0 до 7."); break;
-            }
+            case "1":
+                PrintPeople(service.GetStudents().ToArray());
+                break;
+            case "2":
+                service.AddStudent(ToStudent(ReadStudentInput()));
+                Console.WriteLine("Студента додано.");
+                break;
+            case "3":
+                Console.WriteLine(service.FindStudent(ReadText("Студентський квиток")).GetInfo());
+                break;
+            case "4":
+                service.RemoveStudent(ReadText("Студентський квиток"));
+                Console.WriteLine("Студента видалено.");
+                break;
+            case "5":
+                service.SaveStudents(ReadStorageOptions());
+                Console.WriteLine("Студентів збережено.");
+                break;
+            case "6":
+                service.LoadStudents(ReadStorageOptions());
+                Console.WriteLine("Студентів прочитано з файлу.");
+                break;
+            case "7":
+                List<Student> springStudents = service.GetSpringStudentsOfFourthCourse(ReadStorageOptions());
+                Console.WriteLine("Кількість студентів 4-го курсу, які народилися навесні: " + springStudents.Count);
+                PrintPeople(springStudents.ToArray());
+                break;
+            case "8":
+                Console.WriteLine(service.FindStudent(ReadText("Студентський квиток")).JumpWithParachute());
+                break;
+            default:
+                Console.WriteLine("Немає такого пункту.");
+                break;
         }
     }
 
-    private void FileMenu()
+    // Зчитує дані студента з консолі
+    private static StudentInput ReadStudentInput()
     {
-        while (true)
+        StudentInput input = new StudentInput();
+        input.Surname = ReadText("Прізвище");
+        input.FirstName = ReadText("Ім'я");
+        input.Course = ReadText("Курс");
+        input.StudentCard = ReadText("Студентський квиток");
+        input.BirthDate = ReadText("Дата народження (ХХ.ХХ.ХХХХ)");
+        return input;
+    }
+
+    // Перетворює введені дані на BLL-модель студента (перевіряє числа та дату)
+    private static Student ToStudent(StudentInput input)
+    {
+        int course;
+        if (!int.TryParse(input.Course, out course))
         {
-            Console.WriteLine("\n--- Життєвий цикл файла ---");
-            Console.WriteLine("1 - Створити порожній файл; 2 - Видалити файл; 0 - Назад");
-            Console.Write("Ваш вибір: ");
-            switch (Console.ReadLine())
-            {
-                case "1":
-                    _service.CreateEmptyFile(ReadStoredEntityKind(), ReadStorageOptions());
-                    Console.WriteLine("Порожній файл створено й закрито.");
-                    break;
-                case "2":
-                    _service.DeleteFile(ReadRequired("Ім'я або повний шлях до файлу"));
-                    Console.WriteLine("Файл видалено.");
-                    break;
-                case "0": return;
-                case null: return;
-                default: Console.WriteLine("Оберіть пункт 0, 1 або 2."); break;
-            }
+            throw new EntityValidationException("Курс має бути числом.");
+        }
+
+        DateTime birthDate;
+        if (!DateTime.TryParseExact(input.BirthDate, "dd.MM.yyyy", CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out birthDate))
+        {
+            throw new EntityValidationException("Дата має бути у форматі ХХ.ХХ.ХХХХ, наприклад 15.04.2004.");
+        }
+
+        return new Student(input.Surname, input.FirstName, course, input.StudentCard, birthDate);
+    }
+
+    // ===================== Частина 2: пекарі =====================
+
+    // Меню роботи з пекарями
+    private static void BakerMenu()
+    {
+        Console.WriteLine();
+        Console.WriteLine("--- Пекарі ---");
+        Console.WriteLine("1 - Вивести всіх");
+        Console.WriteLine("2 - Додати пекаря");
+        Console.WriteLine("3 - Знайти за прізвищем");
+        Console.WriteLine("4 - Видалити за прізвищем");
+        Console.WriteLine("5 - Зберегти у файл");
+        Console.WriteLine("6 - Прочитати з файлу");
+        Console.WriteLine("7 - Стрибнути з парашутом");
+        string choice = ReadText("Ваш вибір");
+
+        switch (choice)
+        {
+            case "1":
+                PrintPeople(service.GetBakers().ToArray());
+                break;
+            case "2":
+                BakerInput input = new BakerInput();
+                input.Surname = ReadText("Прізвище");
+                input.FirstName = ReadText("Ім'я");
+                input.Bakery = ReadText("Пекарня");
+                service.AddBaker(new Baker(input.Surname, input.FirstName, input.Bakery));
+                Console.WriteLine("Пекаря додано.");
+                break;
+            case "3":
+                Console.WriteLine(service.FindBaker(ReadText("Прізвище")).GetInfo());
+                break;
+            case "4":
+                service.RemoveBaker(ReadText("Прізвище"));
+                Console.WriteLine("Пекаря видалено.");
+                break;
+            case "5":
+                service.SaveBakers(ReadStorageOptions());
+                Console.WriteLine("Пекарів збережено.");
+                break;
+            case "6":
+                service.LoadBakers(ReadStorageOptions());
+                Console.WriteLine("Пекарів прочитано з файлу.");
+                break;
+            case "7":
+                Console.WriteLine(service.FindBaker(ReadText("Прізвище")).JumpWithParachute());
+                break;
+            default:
+                Console.WriteLine("Немає такого пункту.");
+                break;
         }
     }
 
-    private void FindCharacter()
-    {
-        var index = ReadIndex();
-        var symbol = ReadRequired("Один символ");
-        if (symbol.Length != 1) throw new EntityValidationException("Потрібно ввести рівно один символ.");
-        var position = _service.FindCharacterInString(index, symbol[0]);
-        Console.WriteLine(position >= 0 ? $"Символ знайдено за індексом {position}." : "Символ не знайдено.");
-    }
+    // ===================== Частина 2: підприємці =====================
 
-    private void PrintSpringStudents()
+    // Меню роботи з підприємцями
+    private static void EntrepreneurMenu()
     {
-        var students = _service.GetFourthCourseSpringStudents();
-        Console.WriteLine($"Знайдено: {students.Count}.");
-        PrintStudents(students);
-    }
+        Console.WriteLine();
+        Console.WriteLine("--- Підприємці ---");
+        Console.WriteLine("1 - Вивести всіх");
+        Console.WriteLine("2 - Додати підприємця");
+        Console.WriteLine("3 - Знайти за прізвищем");
+        Console.WriteLine("4 - Видалити за прізвищем");
+        Console.WriteLine("5 - Зберегти у файл");
+        Console.WriteLine("6 - Прочитати з файлу");
+        Console.WriteLine("7 - Стрибнути з парашутом");
+        string choice = ReadText("Ваш вибір");
 
-    private static void PrintStrings(IEnumerable<LaboratoryString> strings)
-    {
-        foreach (var (item, index) in strings.Select((item, index) => (item, index)))
-            Console.WriteLine($"[{index}] \"{item.Value}\" (довжина: {item.Length})");
-    }
-
-    private static void PrintStudents(IEnumerable<Student> students)
-    {
-        foreach (var student in students)
-            Console.WriteLine($"{student.FullName}; курс {student.Course}; квиток {student.StudentCardNumber}; дата: {student.BirthDate:dd.MM.yyyy}");
-    }
-
-    private void PrintBakers()
-    {
-        foreach (var baker in _service.Bakers)
-            Console.WriteLine($"{baker.Surname} {baker.FirstName}; пекарня: {baker.BakeryName}");
-    }
-
-    private void PrintEntrepreneurs()
-    {
-        foreach (var entrepreneur in _service.Entrepreneurs)
-            Console.WriteLine($"{entrepreneur.Surname} {entrepreneur.FirstName}; бізнес: {entrepreneur.BusinessName}");
-    }
-
-    private static Student ReadStudent()
-    {
-        var input = new StudentInput
+        switch (choice)
         {
-            Surname = ReadRequired("Прізвище"), FirstName = ReadRequired("Ім'я"),
-            CourseText = ReadRequired("Курс"), StudentCardNumber = ReadRequired("Номер студентського квитка"),
-            BirthDateText = ReadRequired("Дата народження (дд.ММ.рррр)")
-        };
-        return new Student
+            case "1":
+                PrintPeople(service.GetEntrepreneurs().ToArray());
+                break;
+            case "2":
+                EntrepreneurInput input = new EntrepreneurInput();
+                input.Surname = ReadText("Прізвище");
+                input.FirstName = ReadText("Ім'я");
+                input.Business = ReadText("Бізнес");
+                service.AddEntrepreneur(new Entrepreneur(input.Surname, input.FirstName, input.Business));
+                Console.WriteLine("Підприємця додано.");
+                break;
+            case "3":
+                Console.WriteLine(service.FindEntrepreneur(ReadText("Прізвище")).GetInfo());
+                break;
+            case "4":
+                service.RemoveEntrepreneur(ReadText("Прізвище"));
+                Console.WriteLine("Підприємця видалено.");
+                break;
+            case "5":
+                service.SaveEntrepreneurs(ReadStorageOptions());
+                Console.WriteLine("Підприємців збережено.");
+                break;
+            case "6":
+                service.LoadEntrepreneurs(ReadStorageOptions());
+                Console.WriteLine("Підприємців прочитано з файлу.");
+                break;
+            case "7":
+                Console.WriteLine(service.FindEntrepreneur(ReadText("Прізвище")).JumpWithParachute());
+                break;
+            default:
+                Console.WriteLine("Немає такого пункту.");
+                break;
+        }
+    }
+
+    // ===================== Файли =====================
+
+    // Меню створення порожнього файлу та видалення файлу
+    private static void FileMenu()
+    {
+        Console.WriteLine();
+        Console.WriteLine("--- Файли ---");
+        Console.WriteLine("1 - Створити порожній файл");
+        Console.WriteLine("2 - Видалити файл");
+        string choice = ReadText("Ваш вибір");
+
+        switch (choice)
         {
-            Surname = input.Surname, FirstName = input.FirstName, StudentCardNumber = input.StudentCardNumber,
-            Course = int.Parse(input.CourseText, CultureInfo.InvariantCulture),
-            BirthDate = DateTime.ParseExact(input.BirthDateText, "dd.MM.yyyy", CultureInfo.InvariantCulture)
-        };
+            case "1":
+                Console.WriteLine("Сутність: 1 - студент, 2 - пекар, 3 - підприємець, 4 - рядок");
+                int kind = ReadNumber("Номер сутності");
+                if (kind < 1 || kind > 4)
+                {
+                    throw new EntityValidationException("Номер сутності має бути від 1 до 4.");
+                }
+                service.CreateEmptyFile((EntityKind)kind, ReadStorageOptions());
+                Console.WriteLine("Порожній файл створено.");
+                break;
+            case "2":
+                service.DeleteFile(ReadText("Ім'я файлу"));
+                Console.WriteLine("Файл видалено.");
+                break;
+            default:
+                Console.WriteLine("Немає такого пункту.");
+                break;
+        }
     }
 
-    private static Baker ReadBaker()
+    // ===================== Допоміжні методи введення/виведення =====================
+
+    // Виводить інформацію про список людей (студентів, пекарів або підприємців)
+    private static void PrintPeople(Person[] people)
     {
-        var input = new BakerInput { Surname = ReadRequired("Прізвище"), FirstName = ReadRequired("Ім'я"), BakeryName = ReadRequired("Назва пекарні") };
-        return new Baker { Surname = input.Surname, FirstName = input.FirstName, BakeryName = input.BakeryName };
+        if (people.Length == 0)
+        {
+            Console.WriteLine("Список порожній.");
+        }
+        foreach (Person person in people)
+        {
+            Console.WriteLine(person.GetInfo());
+        }
     }
 
-    private static StringInput ReadString() => new() { Value = ReadRequired("Новий рядок") };
-
-    private static Entrepreneur ReadEntrepreneur()
-    {
-        var input = new EntrepreneurInput { Surname = ReadRequired("Прізвище"), FirstName = ReadRequired("Ім'я"), BusinessName = ReadRequired("Назва бізнесу") };
-        return new Entrepreneur { Surname = input.Surname, FirstName = input.FirstName, BusinessName = input.BusinessName };
-    }
-
+    // Зчитує формат та ім'я файлу, які користувач обирає для серіалізації
     private static StorageOptions ReadStorageOptions()
     {
-        Console.WriteLine("Формат: 1 - binary, 2 - XML, 3 - JSON, 4 - custom.");
-        var format = ReadRequired("Номер формату") switch
+        FileFormat format = ReadFormat();
+        string filePath = ReadText("Ім'я файлу");
+        return new StorageOptions(filePath, format);
+    }
+
+    // Зчитує формат серіалізації
+    private static FileFormat ReadFormat()
+    {
+        Console.WriteLine("Формат: 1 - Binary, 2 - XML, 3 - JSON, 4 - Custom");
+        int format = ReadNumber("Номер формату");
+        if (format < 1 || format > 4)
         {
-            "1" => FileFormat.Binary, "2" => FileFormat.Xml, "3" => FileFormat.Json, "4" => FileFormat.Custom,
-            _ => throw new EntityValidationException("Формат має бути від 1 до 4.")
-        };
-        return new StorageOptions(ReadRequired("Ім'я або повний шлях до файлу"), format);
+            throw new EntityValidationException("Номер формату має бути від 1 до 4.");
+        }
+        return (FileFormat)format;
     }
 
-    private static StoredEntityKind ReadStoredEntityKind()
+    // Зчитує один символ
+    private static char ReadSymbol()
     {
-        Console.WriteLine("Сутність: 1 - студент, 2 - пекар, 3 - підприємець, 4 - рядок.");
-        return ReadRequired("Номер сутності") switch
+        string text = ReadText("Символ");
+        if (text.Length != 1)
         {
-            "1" => StoredEntityKind.Student,
-            "2" => StoredEntityKind.Baker,
-            "3" => StoredEntityKind.Entrepreneur,
-            "4" => StoredEntityKind.LaboratoryString,
-            _ => throw new EntityValidationException("Тип сутності має бути від 1 до 4.")
-        };
+            throw new EntityValidationException("Потрібно ввести рівно один символ.");
+        }
+        return text[0];
     }
 
-    private static int ReadIndex() => int.Parse(ReadRequired("Індекс рядка (від 0)"), CultureInfo.InvariantCulture);
-
-    private static string ReadRequired(string caption)
+    // Зчитує ціле число
+    private static int ReadNumber(string caption)
     {
-        Console.Write($"{caption}: ");
-        var value = Console.ReadLine()?.Trim();
-        return !string.IsNullOrWhiteSpace(value) ? value : throw new EntityValidationException($"Поле «{caption}» обов'язкове.");
+        int number;
+        if (!int.TryParse(ReadText(caption), out number))
+        {
+            throw new EntityValidationException("Потрібно ввести ціле число.");
+        }
+        return number;
     }
 
-    private static void Execute(Action action)
+    // Виводить підказку і зчитує рядок тексту з консолі
+    private static string ReadText(string caption)
     {
-        try { action(); }
-        catch (EntityValidationException exception) { Console.WriteLine($"Помилка введення: {exception.Message}"); }
-        catch (EntityNotFoundException exception) { Console.WriteLine($"Не знайдено: {exception.Message}"); }
-        catch (StorageOperationException exception) { Console.WriteLine($"Помилка файлу: {exception.InnerException?.Message}"); }
-        catch (FormatException) { Console.WriteLine("Перевірте формат введених чисел або дати."); }
-        catch (Exception exception) { Console.WriteLine($"Непередбачена помилка: {exception.Message}"); }
+        Console.Write(caption + ": ");
+        string? text = Console.ReadLine();
+        if (text == null)
+        {
+            return "0";
+        }
+        return text.Trim();
     }
 }

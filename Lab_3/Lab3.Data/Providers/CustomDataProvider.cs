@@ -1,65 +1,71 @@
-using System.Globalization;
-using System.Text;
+using Lab3.Data.Entities;
 
 namespace Lab3.Data.Providers;
 
-// Format: a header of property names and Base64-encoded fields in each next line.
-public sealed class CustomDataProvider : DataProvider
+// Провайдер користувацької серіалізації (власний текстовий формат).
+// Кожне поле записується окремим рядком "Назва=Значення", об'єкти розділяються порожнім рядком:
+//   Value=C#
+//   Length=2
+//
+//   Value=Варіант 8
+//   ...
+public class CustomDataProvider : DataProvider
 {
-    public override SerializationFormat Format => SerializationFormat.Custom;
-
-    public override void Serialize<T>(IReadOnlyCollection<T> entities, string filePath)
+    // Записує список об'єктів у файл власного формату
+    public override void Write<T>(List<T> items, string filePath)
     {
-        EnsureFilePath(filePath);
-        var properties = SerializableProperties.For<T>();
-        using var writer = new StreamWriter(filePath, false, Encoding.UTF8);
-        writer.WriteLine(string.Join('|', properties.Select(property => property.Name)));
-        foreach (var entity in entities)
+        using (StreamWriter writer = new StreamWriter(filePath))
         {
-            var values = properties.Select(property => Convert.ToBase64String(
-                Encoding.UTF8.GetBytes(ToText(property.GetValue(entity)))));
-            writer.WriteLine(string.Join('|', values));
-        }
-    }
-
-    public override List<T> Deserialize<T>(string filePath)
-    {
-        var lines = File.ReadAllLines(filePath, Encoding.UTF8);
-        if (lines.Length == 0 || string.IsNullOrWhiteSpace(lines[0])) return [];
-
-        var properties = SerializableProperties.For<T>();
-        if (!lines[0].Split('|').SequenceEqual(properties.Select(property => property.Name)))
-        {
-            throw new InvalidDataException("Файл не відповідає очікуваній структурі сутності.");
-        }
-
-        var result = new List<T>();
-        foreach (var line in lines.Skip(1).Where(line => !string.IsNullOrWhiteSpace(line)))
-        {
-            var fields = line.Split('|');
-            if (fields.Length != properties.Length)
-                throw new InvalidDataException("Некоректна кількість полів у користувацькому файлі.");
-
-            var entity = new T();
-            for (var index = 0; index < properties.Length; index++)
+            foreach (T item in items)
             {
-                var text = Encoding.UTF8.GetString(Convert.FromBase64String(fields[index]));
-                properties[index].SetValue(entity, FromText(text, properties[index].PropertyType));
+                foreach (KeyValuePair<string, string> field in item.ToFields())
+                {
+                    writer.WriteLine(field.Key + "=" + field.Value);
+                }
+                writer.WriteLine();
             }
-            result.Add(entity);
         }
-        return result;
     }
 
-    private static string ToText(object? value) => value switch
+    // Читає список об'єктів з файлу власного формату
+    public override List<T> Read<T>(string filePath)
     {
-        null => string.Empty,
-        DateTime date => date.ToString("O", CultureInfo.InvariantCulture),
-        _ => Convert.ToString(value, CultureInfo.InvariantCulture) ?? string.Empty
-    };
+        List<T> items = new List<T>();
+        Dictionary<string, string> fields = new Dictionary<string, string>();
 
-    private static object FromText(string value, Type type) => type == typeof(string) ? value
-        : type == typeof(int) ? int.Parse(value, CultureInfo.InvariantCulture)
-        : type == typeof(DateTime) ? DateTime.Parse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind)
-        : throw new NotSupportedException($"Користувацький формат не підтримує тип {type.Name}.");
+        foreach (string line in File.ReadAllLines(filePath))
+        {
+            if (line == "")
+            {
+                // Порожній рядок - кінець одного об'єкта
+                AddItem(items, fields);
+                fields = new Dictionary<string, string>();
+            }
+            else
+            {
+                int separator = line.IndexOf('=');
+                if (separator < 0)
+                {
+                    throw new InvalidDataException("Рядок файлу не має формату Назва=Значення.");
+                }
+                fields[line.Substring(0, separator)] = line.Substring(separator + 1);
+            }
+        }
+
+        // Останній об'єкт, якщо після нього немає порожнього рядка
+        AddItem(items, fields);
+        return items;
+    }
+
+    // Створює об'єкт із зібраних полів і додає його до списку
+    private static void AddItem<T>(List<T> items, Dictionary<string, string> fields) where T : IEntity, new()
+    {
+        if (fields.Count == 0)
+        {
+            return;
+        }
+        T item = new T();
+        item.FromFields(fields);
+        items.Add(item);
+    }
 }

@@ -1,9 +1,19 @@
 namespace Lab3.Business.Models;
 
-public sealed class Baker
+// Пекар (BLL-модель)
+public class Baker : Person
 {
-    public string Surname { get; init; } = string.Empty;
-    public string FirstName { get; init; } = string.Empty;
-    public string BakeryName { get; init; } = string.Empty;
-    public string JumpWithParachute() => $"Пекар {Surname} {FirstName} стрибає з парашутом.";
+    public string Bakery { get; set; }
+
+    // Створює пекаря
+    public Baker(string surname, string firstName, string bakery) : base(surname, firstName)
+    {
+        Bakery = bakery;
+    }
+
+    // Повертає інформацію про пекаря
+    public override string GetInfo()
+    {
+        return Surname + " " + FirstName + ", пекарня: " + Bakery;
+    }
 }
