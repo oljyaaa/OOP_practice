@@ -24,4 +24,10 @@ public class EntrepreneurEntity : IEntity
         FirstName = fields["FirstName"];
         Business = fields["Business"];
     }
+
+    // Підприємець коректний, якщо заповнені всі поля
+    public bool IsValid()
+    {
+        return Surname != "" && FirstName != "" && Business != "";
+    }
 }

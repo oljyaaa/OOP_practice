@@ -34,6 +34,20 @@ public class BinaryDataProvider : DataProvider
     public override List<T> Read<T>(string filePath)
     {
         List<T> items = new List<T>();
+        try
+        {
+            ReadItems(filePath, items);
+        }
+        catch (EndOfStreamException)
+        {
+            throw new InvalidDataException("Двійковий файл пошкоджений (несподіваний кінець файлу).");
+        }
+        return items;
+    }
+
+    // Читає з двійкового файлу всі об'єкти і додає їх до списку
+    private static void ReadItems<T>(string filePath, List<T> items) where T : IEntity, new()
+    {
         using (BinaryReader reader = new BinaryReader(new FileStream(filePath, FileMode.Open)))
         {
             if (reader.ReadString() != Header)
@@ -58,6 +72,5 @@ public class BinaryDataProvider : DataProvider
                 items.Add(item);
             }
         }
-        return items;
     }
 }

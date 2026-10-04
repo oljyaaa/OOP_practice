@@ -24,4 +24,10 @@ public class BakerEntity : IEntity
         FirstName = fields["FirstName"];
         Bakery = fields["Bakery"];
     }
+
+    // Пекар коректний, якщо заповнені всі поля
+    public bool IsValid()
+    {
+        return Surname != "" && FirstName != "" && Bakery != "";
+    }
 }

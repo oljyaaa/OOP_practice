@@ -25,7 +25,15 @@ public class JsonDataProvider : DataProvider
     public override List<T> Read<T>(string filePath)
     {
         string json = File.ReadAllText(filePath);
-        List<T>? items = JsonSerializer.Deserialize<List<T>>(json, options);
+        List<T>? items;
+        try
+        {
+            items = JsonSerializer.Deserialize<List<T>>(json, options);
+        }
+        catch (JsonException)
+        {
+            throw new InvalidDataException("Файл не є JSON-файлом з потрібними даними.");
+        }
         if (items == null)
         {
             return new List<T>();

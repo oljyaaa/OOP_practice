@@ -21,4 +21,10 @@ public class StringEntity : IEntity
         Value = fields["Value"];
         Length = int.Parse(fields["Length"]);
     }
+
+    // Рядок коректний, якщо значення не порожнє і довжина з файлу збігається з реальною
+    public bool IsValid()
+    {
+        return !string.IsNullOrEmpty(Value) && Length == Value.Length;
+    }
 }

@@ -28,7 +28,27 @@ public class EntityContext
         {
             throw new FileNotFoundException("Файл не знайдено: " + filePath);
         }
-        List<T> items = GetProvider(format).Read<T>(filePath);
+
+        List<T> items;
+        try
+        {
+            items = GetProvider(format).Read<T>(filePath);
+        }
+        catch (KeyNotFoundException)
+        {
+            // У бінарному або користувацькому файлі немає потрібного поля
+            throw new InvalidDataException("Файл містить дані іншої сутності.");
+        }
+
+        // Перевіряємо, що у файлі саме ті дані, які очікуються
+        foreach (T item in items)
+        {
+            if (!item.IsValid())
+            {
+                throw new InvalidDataException("Файл містить дані іншої сутності або пошкоджені дані.");
+            }
+        }
+
         openedFiles.Add(filePath);
         return items;
     }

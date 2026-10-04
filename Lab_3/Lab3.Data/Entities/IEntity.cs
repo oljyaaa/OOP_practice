@@ -9,4 +9,7 @@ public interface IEntity
 
     // Заповнює поля сутності значеннями зі словника
     void FromFields(Dictionary<string, string> fields);
+
+    // Перевіряє, що прочитані з файлу дані справді належать цій сутності
+    bool IsValid();
 }

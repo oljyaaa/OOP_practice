@@ -22,7 +22,17 @@ public class XmlDataProvider : DataProvider
         XmlSerializer serializer = new XmlSerializer(typeof(List<T>));
         using (FileStream stream = new FileStream(filePath, FileMode.Open))
         {
-            List<T>? items = (List<T>?)serializer.Deserialize(stream);
+            List<T>? items;
+            try
+            {
+                items = (List<T>?)serializer.Deserialize(stream);
+            }
+            catch (InvalidOperationException)
+            {
+                // XmlSerializer генерує цей виняток, якщо XML пошкоджений або містить іншу сутність
+                throw new InvalidDataException("Файл не є XML-файлом з потрібними даними.");
+            }
+
             if (items == null)
             {
                 return new List<T>();

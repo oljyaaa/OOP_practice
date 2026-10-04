@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Lab3.Data.Entities;
 
 // Сутність "Студент" (частина 2, варіант 8).
@@ -30,5 +32,14 @@ public class StudentEntity : IEntity
         Course = int.Parse(fields["Course"]);
         StudentCard = fields["StudentCard"];
         BirthDate = fields["BirthDate"];
+    }
+
+    // Студент коректний, якщо заповнені ім'я, прізвище, квиток і дата має формат дд.ММ.рррр
+    public bool IsValid()
+    {
+        DateTime date;
+        bool isDateCorrect = DateTime.TryParseExact(BirthDate, "dd.MM.yyyy", CultureInfo.InvariantCulture,
+            DateTimeStyles.None, out date);
+        return Surname != "" && FirstName != "" && StudentCard != "" && isDateCorrect;
     }
 }
