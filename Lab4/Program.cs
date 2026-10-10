@@ -23,12 +23,27 @@ internal class Program
             { 7, 8, 9 }
         };
 
+        // Анонімний метод: суми рядків рахуються двома циклами.
         RowSumsOperation anonymousMethod = delegate(int[,] source)
         {
-            return RowSumCalculator.Calculate(source);
+            int[] sums = new int[source.GetLength(0)];
+
+            for (int row = 0; row < source.GetLength(0); row++)
+            {
+                for (int column = 0; column < source.GetLength(1); column++)
+                {
+                    sums[row] += source[row, column];
+                }
+            }
+
+            return sums;
         };
 
-        RowSumsOperation lambdaExpression = source => RowSumCalculator.Calculate(source);
+        // Лямбда-вираз: та сама операція через LINQ.
+        RowSumsOperation lambdaExpression = source =>
+            Enumerable.Range(0, source.GetLength(0))
+                .Select(row => Enumerable.Range(0, source.GetLength(1)).Sum(column => source[row, column]))
+                .ToArray();
 
         Console.WriteLine("=== ДЕЛЕГАТИ ===");
         PrintArray("Анонімний метод", anonymousMethod(matrix));
