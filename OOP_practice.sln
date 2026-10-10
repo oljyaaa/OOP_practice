@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab31.Domain", "Lab31.Domai
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab31.FileStorage", "Lab31.FileStorage/Lab31.FileStorage.csproj", "{EADCCC99-7D0E-4C0C-920D-D097C2896245}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab4", "Lab4/Lab4.csproj", "{6D122FD6-3BC2-464D-9CFB-FF3BFE06AC59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,5 +28,9 @@ Global
 		{EADCCC99-7D0E-4C0C-920D-D097C2896245}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EADCCC99-7D0E-4C0C-920D-D097C2896245}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EADCCC99-7D0E-4C0C-920D-D097C2896245}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D122FD6-3BC2-464D-9CFB-FF3BFE06AC59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D122FD6-3BC2-464D-9CFB-FF3BFE06AC59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D122FD6-3BC2-464D-9CFB-FF3BFE06AC59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D122FD6-3BC2-464D-9CFB-FF3BFE06AC59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
