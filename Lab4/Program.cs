@@ -53,7 +53,7 @@ internal class Program
     /// <summary>Демонструє операції з рахунком і обробку події.</summary>
     private static void DemonstrateBankAccount()
     {
-        BankAccount account = new("Олена", 500m, 300m);
+        BankAccount account = new("Ольга", 500m, 300m);
         BankAccountEventHandler handler = new();
         account.CreditLimitExceeded += handler.HandleCreditLimitExceeded;
 
