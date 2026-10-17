@@ -12,7 +12,7 @@
 
 Тести: MSTest, 37 тестів за принципом Arrange-Act-Assert. Покриття (coverlet): **100% рядків, 100% гілок**.
 
-Схеми: [SCHEMES.md](SCHEMES.md). Доповідь: [ДОПОВІДЬ.md](ДОПОВІДЬ.md).
+Схеми: [SCHEMES.md](SCHEMES.md).
 
 ## Запуск
 
