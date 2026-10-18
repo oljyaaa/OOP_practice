@@ -54,7 +54,11 @@ namespace PublishingHouse.UI.Menus
             var editor = new Editor();
             InputHelper.ReadValid("Ім'я: ", s => editor.FirstName = s);
             InputHelper.ReadValid("Прізвище: ", s => editor.LastName = s);
-            InputHelper.ReadValid("Email: ", s => editor.Email = s);
+            InputHelper.ReadValid("Email: ", s =>
+            {
+                editor.Email = s;
+                Service.EnsureEmailAvailable(editor.Email, editor.Id);
+            });
             InputHelper.ReadValid("Ставка за сторінку, грн: ", s => editor.RatePerPage = InputHelper.ParseDecimal(s));
             editor.Specialization = InputHelper.ReadEnum<Genre>("Спеціалізація:");
 

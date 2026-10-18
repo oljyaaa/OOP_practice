@@ -68,5 +68,52 @@ namespace PublishingHouse.Tests
 
             Assert.ThrowsExactly<DataStorageException>(() => new JsonFileService<PublishingData>(_path).Load());
         }
+    
+        [TestMethod]
+        public void Save_DoesNotWriteComputedProperties()
+        {
+            var data = new PublishingData
+            {
+                Authors = { new Author { FirstName = "Іван", LastName = "Франко", Email = "ivan@mail.com" } }
+            };
+
+            new JsonFileService<PublishingData>(_path).Save(data);
+            string json = File.ReadAllText(_path);
+
+            Assert.DoesNotContain("FullName", json);
+            Assert.DoesNotContain("Role", json);
+            Assert.IsFalse(File.Exists(_path + ".tmp"));
+        }
+
+        [TestMethod]
+        public void Save_CreatesMissingDirectory()
+        {
+            string directory = Path.Combine(Path.GetTempPath(), $"publishing_dir_{Guid.NewGuid():N}");
+            string path = Path.Combine(directory, "data.json");
+            try
+            {
+                new JsonFileService<PublishingData>(path).Save(new PublishingData());
+
+                Assert.IsTrue(File.Exists(path));
+            }
+            finally
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+
+        [TestMethod]
+        public void Load_EmptyFile_ReturnsEmptyData()
+        {
+            File.WriteAllText(_path, "   ");
+
+            Assert.IsEmpty(new JsonFileService<PublishingData>(_path).Load().Manuscripts);
+        }
+
+        [TestMethod]
+        public void Constructor_EmptyPath_Throws()
+        {
+            Assert.ThrowsExactly<ArgumentException>(() => new JsonFileService<PublishingData>(""));
+        }
     }
 }

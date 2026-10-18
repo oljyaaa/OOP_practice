@@ -51,7 +51,11 @@ namespace PublishingHouse.UI.Menus
             var author = new Author();
             InputHelper.ReadValid("Ім'я: ", s => author.FirstName = s);
             InputHelper.ReadValid("Прізвище: ", s => author.LastName = s);
-            InputHelper.ReadValid("Email: ", s => author.Email = s);
+            InputHelper.ReadValid("Email: ", s =>
+            {
+                author.Email = s;
+                Service.EnsureEmailAvailable(author.Email, author.Id);
+            });
             InputHelper.ReadValid($"Роялті, % (0–{Author.MaxRoyaltyPercent}): ",
                 s => author.RoyaltyPercent = InputHelper.ParseDecimal(s));
 

@@ -62,13 +62,13 @@ namespace PublishingHouse.Core.Services
 
         public void AddAuthor(Author author)
         {
-            EnsureEmailIsUnique(author.Email, author.Id);
+            EnsureEmailAvailable(author.Email, author.Id);
             _authors.Add(author);
         }
 
         public void AddEditor(Editor editor)
         {
-            EnsureEmailIsUnique(editor.Email, editor.Id);
+            EnsureEmailAvailable(editor.Email, editor.Id);
             _editors.Add(editor);
         }
 
@@ -78,7 +78,7 @@ namespace PublishingHouse.Core.Services
         public void ChangeEmail(Person person, string newEmail)
         {
             ArgumentNullException.ThrowIfNull(person);
-            EnsureEmailIsUnique(newEmail, person.Id);
+            EnsureEmailAvailable(newEmail, person.Id);
             person.Email = newEmail;
         }
 
@@ -90,13 +90,15 @@ namespace PublishingHouse.Core.Services
             _authors.Remove(authorId);
         }
 
+        /// <summary>
+        /// Видаляє редактора. Редактора, закріпленого за будь-яким рукописом, видалити не можна:
+        /// інакше рукопис посилатиметься на неіснуючий запис, а калькуляція втратить вартість редагування.
+        /// </summary>
         public void RemoveEditor(Guid editorId)
         {
             Editor editor = _editors.GetById(editorId);
-            bool hasActiveWork = _manuscripts.Find(m => m.EditorId == editorId
-                && m.Stage != ManuscriptStage.Printed && m.Stage != ManuscriptStage.Rejected).Count > 0;
-            if (hasActiveWork)
-                throw new PublishingException($"Неможливо видалити редактора {editor.FullName}: він працює над рукописами.");
+            if (_manuscripts.Find(m => m.EditorId == editorId).Count > 0)
+                throw new PublishingException($"Неможливо видалити редактора {editor.FullName}: він закріплений за рукописами.");
             _editors.Remove(editorId);
         }
 
@@ -272,7 +274,10 @@ namespace PublishingHouse.Core.Services
             _printRuns.ReplaceAll(data.PrintRuns);
         }
 
-        private void EnsureEmailIsUnique(string email, Guid ownId)
+        /// <summary>
+        /// Перевіряє, що email не зайнятий іншим автором чи редактором.
+        /// </summary>
+        public void EnsureEmailAvailable(string email, Guid ownId)
         {
             bool taken = _authors.Find(a => a.Id != ownId && a.Email.Equals(email, StringComparison.OrdinalIgnoreCase)).Count > 0
                          || _editors.Find(e => e.Id != ownId && e.Email.Equals(email, StringComparison.OrdinalIgnoreCase)).Count > 0;
