@@ -69,12 +69,7 @@ classDiagram
     MenuBase <|-- ReportMenu
     MenuBase *-- MenuItem
     MenuBase --> PublishingService
-    MainMenu ..> AuthorMenu
-    MainMenu ..> EditorMenu
-    MainMenu ..> ManuscriptMenu
-    MainMenu ..> PrintRunMenu
-    MainMenu ..> ReportMenu
-    Program ..> MainMenu
+    Program ..> MainMenu : створює
     Program ..> PublishingService
     MenuBase ..> InputHelper
     MenuBase ..> ConsoleHelper

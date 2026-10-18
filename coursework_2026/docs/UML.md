@@ -135,7 +135,7 @@ classDiagram
 
 </details>
 
-## Сервіси, репозиторії, компаратори
+## Сервіс, репозиторії, калькулятор
 
 ![Сервіси, репозиторії, компаратори](uml/2_services.png)
 
@@ -200,25 +200,6 @@ classDiagram
         +ImportData(PublishingData)
         +EnsureEmailAvailable(string, Guid)
     }
-    class JsonFileService~T~ {
-        -JsonSerializerOptions Options$
-        -string _filePath
-        +string FilePath
-        +bool FileExists
-        +Save(T data)
-        +Load() T
-    }
-    class IComparer~T~ {
-        <<interface>>
-        +Compare(T x, T y) int
-    }
-    class PersonByNameComparer
-    class ManuscriptByPageCountComparer
-    class ManuscriptByStageComparer
-    class PrintRunByProfitComparer {
-        -Func~PrintRun, decimal~ _profitSelector
-    }
-
     class PrintRunEstimate {
         +decimal FixedCosts
         +decimal VariableCosts
@@ -245,17 +226,50 @@ classDiagram
     ICostCalculator <|.. CostCalculator
     PublishingService o-- "4" IRepository~T~
     PublishingService o-- ICostCalculator
-    PublishingService ..> PublishingData : Export / Import
     ICostCalculator ..> PrintRunEstimate : створює
+    PublishingService ..> PublishingData : Export / Import
     PublishingData o-- Author
     PublishingData o-- Editor
     PublishingData o-- Manuscript
     PublishingData o-- PrintRun
-    JsonFileService~T~ ..> PublishingData : T = PublishingData
+```
+
+</details>
+
+## Компаратори та JSON-серіалізація
+
+![Компаратори та JSON-серіалізація](uml/2b_comparers_json.png)
+
+<details><summary>Код Mermaid</summary>
+
+```mermaid
+classDiagram
+    direction TB
+    class IComparer~T~ {
+        <<interface>>
+        +Compare(T x, T y) int
+    }
+    class PersonByNameComparer
+    class ManuscriptByPageCountComparer
+    class ManuscriptByStageComparer
+    class PrintRunByProfitComparer {
+        -Func~PrintRun, decimal~ _profitSelector
+    }
+    class JsonFileService~T~ {
+        -JsonSerializerOptions Options$
+        -string _filePath
+        +string FilePath
+        +bool FileExists
+        +Save(T data)
+        +Load() T
+    }
+    class PublishingData
+
     IComparer~T~ <|.. PersonByNameComparer
     IComparer~T~ <|.. ManuscriptByPageCountComparer
     IComparer~T~ <|.. ManuscriptByStageComparer
     IComparer~T~ <|.. PrintRunByProfitComparer
+    JsonFileService~T~ ..> PublishingData : T = PublishingData
 ```
 
 </details>
@@ -387,12 +401,7 @@ classDiagram
     MenuBase <|-- ReportMenu
     MenuBase *-- MenuItem
     MenuBase --> PublishingService
-    MainMenu ..> AuthorMenu
-    MainMenu ..> EditorMenu
-    MainMenu ..> ManuscriptMenu
-    MainMenu ..> PrintRunMenu
-    MainMenu ..> ReportMenu
-    Program ..> MainMenu
+    Program ..> MainMenu : створює
     Program ..> PublishingService
     MenuBase ..> InputHelper
     MenuBase ..> ConsoleHelper

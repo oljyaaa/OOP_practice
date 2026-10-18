@@ -1,0 +1,27 @@
+classDiagram
+    direction TB
+    class IComparer~T~ {
+        <<interface>>
+        +Compare(T x, T y) int
+    }
+    class PersonByNameComparer
+    class ManuscriptByPageCountComparer
+    class ManuscriptByStageComparer
+    class PrintRunByProfitComparer {
+        -Func~PrintRun, decimal~ _profitSelector
+    }
+    class JsonFileService~T~ {
+        -JsonSerializerOptions Options$
+        -string _filePath
+        +string FilePath
+        +bool FileExists
+        +Save(T data)
+        +Load() T
+    }
+    class PublishingData
+
+    IComparer~T~ <|.. PersonByNameComparer
+    IComparer~T~ <|.. ManuscriptByPageCountComparer
+    IComparer~T~ <|.. ManuscriptByStageComparer
+    IComparer~T~ <|.. PrintRunByProfitComparer
+    JsonFileService~T~ ..> PublishingData : T = PublishingData

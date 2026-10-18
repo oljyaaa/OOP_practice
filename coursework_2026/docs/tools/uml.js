@@ -1,6 +1,5 @@
 const puppeteer = require('puppeteer-core');
 const fs = require('fs'), path = require('path');
-// Рендерить .mmd у PNG через headless Chrome. Шлях до mermaid.min.js — поруч зі скриптом.
 const [srcDir, outDir] = process.argv.slice(2);
 (async () => {
   const browser = await puppeteer.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: 'new' });
