@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="PublishingHouse.Core/PublishingHouse.Core.csproj" />
+  <Project Path="PublishingHouse.Tests/PublishingHouse.Tests.csproj" />
+  <Project Path="PublishingHouse.UI/PublishingHouse.UI.csproj" />
+</Solution>
