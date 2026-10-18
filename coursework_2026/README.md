@@ -23,7 +23,7 @@
 | 7 | Виняткові ситуації `*` | `ManuscriptRejectedException`, `InvalidPrintRunSizeException`, `InvalidStageTransitionException`, `EntityNotFoundException`, `DataStorageException`; try-catch в UI |
 | 8 | Бізнес-логіка в DLL `**` | `PublishingHouse.Core` (Class Library), підключена до `PublishingHouse.UI` |
 | 9 | Хороший стиль | Жодних public полів, кожен клас в окремому файлі, мнемонічні імена, XML-коментарі |
-| 10 | Пояснювальна записка | `docs/` — звіт `.docx` за структурою кафедри |
+| 10 | Пояснювальна записка | Звіт `.docx` за структурою кафедри (зберігається локально, генератор — `docs/tools/report.js`) |
 | 11 | Вихідний код | Цей каталог (solution) |
 
 ## Планована структура
@@ -94,7 +94,7 @@ coursework_2026/
 - [x] 6. Консольне меню + валідація вводу + обробка винятків
 - [x] 7. Unit-тести (70, покриття Core ≈ 96%) і ручна перевірка — [docs/MANUAL_TESTING.md](docs/MANUAL_TESTING.md)
 - [x] 8. UML-діаграми ([docs/UML.md](docs/UML.md)) і скріншоти ([docs/SCREENSHOTS.md](docs/SCREENSHOTS.md))
-- [x] 9. Пояснювальна записка — [docs/Пояснювальна_записка.docx](docs/Пояснювальна_записка.docx) (титульний лист потребує ПІБ, групи та керівника)
+- [x] 9. Пояснювальна записка (.docx) — генерується скриптом `docs/tools/report.js`, у репозиторій не додається
 
 ## Запуск
 
