@@ -1,3 +1,4 @@
+using PublishingHouse.Core.Interfaces;
 using PublishingHouse.Core.Models.Enums;
 
 namespace PublishingHouse.Core.Models
@@ -5,7 +6,7 @@ namespace PublishingHouse.Core.Models
     /// <summary>
     /// Рукопис книги, що проходить етапи підготовки до друку.
     /// </summary>
-    public class Manuscript : EntityBase, IComparable<Manuscript>
+    public class Manuscript : EntityBase, IComparable<Manuscript>, IReviewable
     {
         public const int MaxTitleLength = 150;
         public const int MaxPageCount = 5000;
@@ -79,6 +80,8 @@ namespace PublishingHouse.Core.Models
             get => _reviewComment;
             set => _reviewComment = value?.Trim() ?? string.Empty;
         }
+
+        public bool CanBeReviewed => Stage == ManuscriptStage.UnderReview;
 
         public int CompareTo(Manuscript? other)
         {
