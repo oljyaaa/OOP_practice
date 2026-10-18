@@ -1,0 +1,81 @@
+classDiagram
+    direction TB
+    class Program {
+        <<static>>
+        -string DataFileName$
+        -Main()$
+        -LoadData(JsonFileService, PublishingService)$
+        -BackUpCorruptedFile(string)$
+        -SaveData(JsonFileService, PublishingService)$
+    }
+    class MenuBase {
+        <<abstract>>
+        #PublishingService Service
+        #string Title*
+        #string ExitText
+        #CreateItems()* IReadOnlyList~MenuItem~
+        +Run()
+        -Execute(MenuItem)$
+    }
+    class MenuItem {
+        +string Text
+        +Action Action
+    }
+    class MainMenu {
+        -JsonFileService~PublishingData~ _storage
+        -Save()
+    }
+    class AuthorMenu
+    class EditorMenu
+    class ManuscriptMenu
+    class PrintRunMenu {
+        +PrintEstimate(PrintRunEstimate)$
+    }
+    class ReportMenu
+    class InputHelper {
+        <<static>>
+        +ReadInt(string, int, int)$ int
+        +ReadNonEmpty(string)$ string
+        +Confirm(string)$ bool
+        +ReadEnum~T~(string)$ T
+        +ReadValid(string, Action~string~)$
+        +ReadValidOptional(string, string, Action~string~)$
+        +Choose~T~(IReadOnlyList~T~, Func, string)$ T?
+        +ParseDecimal(string)$ decimal
+        +ParseInt(string)$ int
+    }
+    class ConsoleHelper {
+        <<static>>
+        +Header(string)$
+        +Success(string)$
+        +Error(string)$
+        +Warning(string)$
+        +Money(decimal)$ string
+    }
+    class DisplayNames {
+        <<static>>
+        +Of~T~(T value)$ string
+    }
+    class EndOfInputException
+    class PublishingService {
+        <<PublishingHouse.Core>>
+    }
+
+    MenuBase <|-- MainMenu
+    MenuBase <|-- AuthorMenu
+    MenuBase <|-- EditorMenu
+    MenuBase <|-- ManuscriptMenu
+    MenuBase <|-- PrintRunMenu
+    MenuBase <|-- ReportMenu
+    MenuBase *-- MenuItem
+    MenuBase --> PublishingService
+    MainMenu ..> AuthorMenu
+    MainMenu ..> EditorMenu
+    MainMenu ..> ManuscriptMenu
+    MainMenu ..> PrintRunMenu
+    MainMenu ..> ReportMenu
+    Program ..> MainMenu
+    Program ..> PublishingService
+    MenuBase ..> InputHelper
+    MenuBase ..> ConsoleHelper
+    InputHelper ..> EndOfInputException : throws

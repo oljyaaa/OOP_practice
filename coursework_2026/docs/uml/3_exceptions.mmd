@@ -1,0 +1,38 @@
+classDiagram
+    direction TB
+    class Exception {
+        <<System>>
+        +string Message
+        +Exception InnerException
+    }
+    class PublishingException {
+        +PublishingException(string message)
+        +PublishingException(string message, Exception inner)
+    }
+    class ManuscriptRejectedException {
+        +Guid ManuscriptId
+        +string ManuscriptTitle
+        +string Reason
+    }
+    class InvalidPrintRunSizeException {
+        +int RequestedSize
+        +int MinSize
+        +int MaxSize
+    }
+    class InvalidStageTransitionException {
+        +ManuscriptStage From
+        +ManuscriptStage To
+    }
+    class EntityNotFoundException {
+        +string EntityName
+        +Guid EntityId
+    }
+    class DataStorageException {
+        +string FilePath
+    }
+    Exception <|-- PublishingException
+    PublishingException <|-- ManuscriptRejectedException
+    PublishingException <|-- InvalidPrintRunSizeException
+    PublishingException <|-- InvalidStageTransitionException
+    PublishingException <|-- EntityNotFoundException
+    PublishingException <|-- DataStorageException

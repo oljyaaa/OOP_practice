@@ -1,0 +1,19 @@
+flowchart TB
+    user([Користувач])
+    subgraph UI["PublishingHouse.UI — Console App"]
+        direction LR
+        Program --> Menus["MainMenu та підменю"] --> Input["InputHelper / ConsoleHelper"]
+    end
+    subgraph Core["PublishingHouse.Core — Class Library (DLL)"]
+        direction LR
+        Json["JsonFileService&lt;T&gt;"]
+        Service[PublishingService] --> Repos["Repository&lt;T&gt; × 4"]
+        Service --> Calc[CostCalculator]
+        Models["Моделі, інтерфейси, виключення"]
+    end
+    File[("publishing_data.json")]
+    Tests["PublishingHouse.Tests — MSTest"]
+    user --> UI
+    UI -- "посилання на DLL" --> Core
+    Json <--> File
+    Tests --> Core

@@ -1,0 +1,114 @@
+classDiagram
+    direction TB
+    class IRepository~T~ {
+        <<interface>>
+        +int Count
+        +Add(T item)
+        +GetById(Guid id) T
+        +TryGetById(Guid id, out T item) bool
+        +Remove(Guid id) bool
+        +GetAll() IReadOnlyList~T~
+        +Find(Predicate~T~ match) List~T~
+        +ReplaceAll(IEnumerable~T~ items)
+    }
+    class Repository~T~ {
+        -List~T~ _items
+        -Dictionary~Guid, T~ _index
+        -string _entityName
+        +Repository(string entityName)
+    }
+    class ICostCalculator {
+        <<interface>>
+        +Estimate(PrintRun, Manuscript, Author, Editor?) PrintRunEstimate
+    }
+    class CostCalculator {
+        +decimal LayoutCostPerPage$
+        +decimal CoverDesignCost$
+        +decimal PrintingCostPerPage$
+        +CalculatePaperCostPerPage(PaperType) decimal
+        +CalculateCoverCostPerCopy(CoverType) decimal
+        +Estimate(PrintRun, Manuscript, Author, Editor?) PrintRunEstimate
+    }
+    class PublishingService {
+        +int MinPrintRunSize$
+        +int MaxPrintRunSize$
+        -Dictionary~ManuscriptStage, ManuscriptStage~ NextStage$
+        -IRepository~Author~ _authors
+        -IRepository~Editor~ _editors
+        -IRepository~Manuscript~ _manuscripts
+        -IRepository~PrintRun~ _printRuns
+        -ICostCalculator _calculator
+        +AddAuthor(Author)
+        +AddEditor(Editor)
+        +ChangeEmail(Person, string)
+        +RemoveAuthor(Guid)
+        +RemoveEditor(Guid)
+        +SubmitManuscript(Guid, string, Genre, int) Manuscript
+        +RemoveManuscript(Guid)
+        +AssignEditor(Guid, Guid)
+        +AdvanceStage(Guid) ManuscriptStage
+        +Review(Guid, bool, string)
+        +CreatePrintRun(Guid, int, PaperType, CoverType, decimal, decimal) PrintRun
+        +Estimate(PrintRun) PrintRunEstimate
+        +EstimatePrintRun(Guid) PrintRunEstimate
+        +GetTotalExpectedProfit() decimal
+        +ExportData() PublishingData
+        +ImportData(PublishingData)
+        +EnsureEmailAvailable(string, Guid)
+    }
+    class JsonFileService~T~ {
+        -JsonSerializerOptions Options$
+        -string _filePath
+        +string FilePath
+        +bool FileExists
+        +Save(T data)
+        +Load() T
+    }
+    class IComparer~T~ {
+        <<interface>>
+        +Compare(T x, T y) int
+    }
+    class PersonByNameComparer
+    class ManuscriptByPageCountComparer
+    class ManuscriptByStageComparer
+    class PrintRunByProfitComparer {
+        -Func~PrintRun, decimal~ _profitSelector
+    }
+
+    class PrintRunEstimate {
+        +decimal FixedCosts
+        +decimal VariableCosts
+        +int Quantity
+        +decimal ExpectedRevenue
+        +decimal Royalty
+        +decimal TotalCost
+        +decimal CostPerCopy
+        +decimal ExpectedProfit
+        +bool IsProfitable
+    }
+    class PublishingData {
+        +List~Author~ Authors
+        +List~Editor~ Editors
+        +List~Manuscript~ Manuscripts
+        +List~PrintRun~ PrintRuns
+    }
+    class Author
+    class Editor
+    class Manuscript
+    class PrintRun
+
+    IRepository~T~ <|.. Repository~T~
+    ICostCalculator <|.. CostCalculator
+    PublishingService o-- "4" IRepository~T~
+    PublishingService o-- ICostCalculator
+    PublishingService ..> PublishingData : Export / Import
+    ICostCalculator ..> PrintRunEstimate : створює
+    PublishingData o-- Author
+    PublishingData o-- Editor
+    PublishingData o-- Manuscript
+    PublishingData o-- PrintRun
+    JsonFileService~T~ ..> PublishingData : T = PublishingData
+    IComparer~T~ <|.. PersonByNameComparer
+    IComparer~T~ <|.. ManuscriptByPageCountComparer
+    IComparer~T~ <|.. ManuscriptByStageComparer
+    IComparer~T~ <|.. PrintRunByProfitComparer

@@ -1,0 +1,122 @@
+classDiagram
+    direction TB
+    class EntityBase {
+        <<abstract>>
+        -Guid _id
+        +Guid Id
+        +GetSummary()* string
+        +ToString() string
+    }
+    class Person {
+        <<abstract>>
+        -string _firstName
+        -string _lastName
+        -string _email
+        +string FirstName
+        +string LastName
+        +string Email
+        +string FullName
+        +string Role*
+        -ValidateName(string, string)$ string
+    }
+    class Author {
+        +decimal MaxRoyaltyPercent$
+        -decimal _royaltyPercent
+        +decimal RoyaltyPercent
+        +string Role
+        +GetSummary() string
+    }
+    class Editor {
+        +decimal MaxRatePerPage$
+        -decimal _ratePerPage
+        +decimal RatePerPage
+        +Genre Specialization
+        +string Role
+        +GetSummary() string
+    }
+    class Manuscript {
+        +int MaxPageCount$
+        -string _title
+        -int _pageCount
+        -Guid _authorId
+        +string Title
+        +Genre Genre
+        +int PageCount
+        +Guid AuthorId
+        +Guid? EditorId
+        +ManuscriptStage Stage
+        +DateTime SubmittedOn
+        +string ReviewComment
+        +bool CanBeReviewed
+        +CompareTo(Manuscript) int
+        +GetSummary() string
+    }
+    class PrintRun {
+        -int _quantity
+        -decimal _retailPrice
+        -decimal _expectedSellThroughPercent
+        +Guid ManuscriptId
+        +int Quantity
+        +PaperType PaperType
+        +CoverType CoverType
+        +decimal RetailPrice
+        +decimal ExpectedSellThroughPercent
+        +DateTime CreatedOn
+        +GetSummary() string
+    }
+    class IReviewable {
+        <<interface>>
+        +bool CanBeReviewed
+        +string ReviewComment
+    }
+    class IComparable~Manuscript~ {
+        <<interface>>
+        +CompareTo(Manuscript) int
+    }
+    class ManuscriptStage {
+        <<enumeration>>
+        Submitted
+        UnderReview
+        Editing
+        Proofreading
+        Layout
+        ReadyForPrint
+        Printed
+        Rejected
+    }
+    class Genre {
+        <<enumeration>>
+        Fiction
+        NonFiction
+        Science
+        Children
+        Poetry
+        Textbook
+    }
+    class PaperType {
+        <<enumeration>>
+        Newsprint
+        Offset
+        Coated
+    }
+    class CoverType {
+        <<enumeration>>
+        Paperback
+        Hardcover
+    }
+
+    EntityBase <|-- Person
+    Person <|-- Author
+    Person <|-- Editor
+    EntityBase <|-- Manuscript
+    EntityBase <|-- PrintRun
+    IReviewable <|.. Manuscript
+    IComparable~Manuscript~ <|.. Manuscript
+    Manuscript "0..*" --> "1" Author : AuthorId
+    Manuscript "0..*" --> "0..1" Editor : EditorId
+    PrintRun "0..*" --> "1" Manuscript : ManuscriptId
+    Manuscript ..> ManuscriptStage
+    Manuscript ..> Genre
+    Editor ..> Genre
+    PrintRun ..> PaperType
+    PrintRun ..> CoverType

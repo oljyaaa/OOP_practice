@@ -1,0 +1,14 @@
+=== Книжкове видавництво (Publishing House) ===
+✖ Не вдалося завантажити дані. Файл: ~/coursework/publishing_data.json. 'b' is an invalid start of a property name. Expected a '"'. Path: $.Authors[0] | LineNumber: 0 | BytePositionInLine: 17.
+! Пошкоджений файл збережено як ~/coursework/publishing_data.json.20261018_165003.bak. Робота продовжується з порожньою базою.
+
+===== Книжкове видавництво — головне меню =====
+  1. Автори
+  2. Редактори
+  3. Рукописи
+  4. Тиражі
+  5. Звіти
+  6. Зберегти дані
+  0. Зберегти і вийти
+Ваш вибір: 0
+✔ Дані збережено у ~/coursework/publishing_data.json. До побачення!

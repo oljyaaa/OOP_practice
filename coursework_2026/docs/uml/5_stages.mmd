@@ -1,0 +1,12 @@
+stateDiagram-v2
+    [*] --> Submitted : SubmitManuscript
+    Submitted --> UnderReview : AdvanceStage
+    UnderReview --> Editing : Review(схвалено)\nпотрібен редактор
+    UnderReview --> Rejected : Review(відхилено)\nManuscriptRejectedException
+    Editing --> Proofreading : AdvanceStage
+    Proofreading --> Layout : AdvanceStage
+    Layout --> ReadyForPrint : AdvanceStage
+    ReadyForPrint --> Printed : CreatePrintRun\n100–100 000 прим.
+    Printed --> Printed : CreatePrintRun\n(додатковий тираж)
+    Rejected --> [*]
+    Printed --> [*]
