@@ -72,6 +72,16 @@ namespace PublishingHouse.Core.Services
             _editors.Add(editor);
         }
 
+        /// <summary>
+        /// Змінює email автора чи редактора з перевіркою унікальності.
+        /// </summary>
+        public void ChangeEmail(Person person, string newEmail)
+        {
+            ArgumentNullException.ThrowIfNull(person);
+            EnsureEmailIsUnique(newEmail, person.Id);
+            person.Email = newEmail;
+        }
+
         public void RemoveAuthor(Guid authorId)
         {
             Author author = _authors.GetById(authorId);

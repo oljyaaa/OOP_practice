@@ -125,6 +125,16 @@ namespace PublishingHouse.Tests
         }
 
         [TestMethod]
+        public void ChangeEmail_ToTakenEmail_ThrowsAndKeepsOld()
+        {
+            Assert.ThrowsExactly<PublishingException>(() => _service.ChangeEmail(_editor, "lina@mail.com"));
+            Assert.AreEqual("petro@mail.com", _editor.Email);
+
+            _service.ChangeEmail(_editor, "new@mail.com");
+            Assert.AreEqual("new@mail.com", _editor.Email);
+        }
+
+        [TestMethod]
         public void RemoveAuthor_WithManuscripts_Throws()
         {
             _service.SubmitManuscript(_author.Id, "Рукопис", Genre.Fiction, 50);
