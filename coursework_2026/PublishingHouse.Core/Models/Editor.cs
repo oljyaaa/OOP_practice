@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using PublishingHouse.Core.Models.Enums;
 
 namespace PublishingHouse.Core.Models
@@ -31,6 +32,7 @@ namespace PublishingHouse.Core.Models
         /// </summary>
         public Genre Specialization { get; set; }
 
+        [JsonIgnore]
         public override string Role => "Редактор";
 
         public override string GetSummary() =>

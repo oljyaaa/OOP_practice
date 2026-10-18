@@ -20,7 +20,7 @@
 | 4 | Інтерфейси та абстрактні класи | Власні: `IRepository<T>`, `ICostCalculator`, `IReviewable`; стандартні: `IComparable<T>`, `IComparer<T>` |
 | 5 | Збереження/завантаження `*` + серіалізація `***` | `JsonFileService<T>` (System.Text.Json): load при старті, save при виході |
 | 6 | Контроль коректності вводу | Валідація у setter-ах властивостей + `InputHelper` (ReadInt/ReadDecimal/ReadString/ReadDate) в UI |
-| 7 | Виняткові ситуації `*` | `ManuscriptRejectedException`, `InvalidPrintRunSizeException`, `InvalidStageTransitionException`, `EntityNotFoundException`; try-catch в UI |
+| 7 | Виняткові ситуації `*` | `ManuscriptRejectedException`, `InvalidPrintRunSizeException`, `InvalidStageTransitionException`, `EntityNotFoundException`, `DataStorageException`; try-catch в UI |
 | 8 | Бізнес-логіка в DLL `**` | `PublishingHouse.Core` (Class Library), підключена до `PublishingHouse.UI` |
 | 9 | Хороший стиль | Жодних public полів, кожен клас в окремому файлі, мнемонічні імена, XML-коментарі |
 | 10 | Пояснювальна записка | `docs/` — звіт `.docx` за структурою кафедри |
@@ -67,7 +67,11 @@ coursework_2026/
 - собівартість одного примірника = загальна / тираж;
 - виручка = тираж × ціна × прогнозований відсоток продажу;
 - прибуток = виручка − собівартість − роялті автора.
-- тираж поза межами (напр. < 100 або > 100 000) → `InvalidPrintRunSizeException`.
+- тираж поза межами 100–100 000 → `InvalidPrintRunSizeException`.
+
+Тарифи: редагування — ставка редактора × сторінки; верстка 15 грн/стор.; дизайн обкладинки 5 000 грн;
+папір 0,15 / 0,30 / 0,60 грн/стор. (газетний / офсетний / крейдований); друк 0,20 грн/стор.;
+обкладинка 12 грн (м'яка) / 45 грн (тверда) за примірник.
 
 ## Функції меню
 
@@ -84,7 +88,7 @@ coursework_2026/
 - [x] 2. Моделі, енуми, абстрактні класи
 - [x] 3. Власні виключення
 - [x] 4. Інтерфейси, generic-репозиторій, компаратори
-- [ ] 5. Сервіси: етапи, калькуляція, JSON-серіалізація
+- [x] 5. Сервіси: етапи, калькуляція, JSON-серіалізація
 - [ ] 6. Консольне меню + валідація вводу + обробка винятків
 - [ ] 7. Unit-тести (опційно) і ручна перевірка
 - [ ] 8. UML-діаграма класів, скріншоти

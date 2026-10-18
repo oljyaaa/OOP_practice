@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 namespace PublishingHouse.Core.Models
 {
     /// <summary>
@@ -24,6 +25,7 @@ namespace PublishingHouse.Core.Models
             }
         }
 
+        [JsonIgnore]
         public override string Role => "Автор";
 
         public override string GetSummary() =>

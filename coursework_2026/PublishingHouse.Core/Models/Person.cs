@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 namespace PublishingHouse.Core.Models
 {
     /// <summary>
@@ -45,11 +46,13 @@ namespace PublishingHouse.Core.Models
         /// <summary>
         /// Повне ім'я особи.
         /// </summary>
+        [JsonIgnore]
         public string FullName => $"{FirstName} {LastName}";
 
         /// <summary>
         /// Роль особи у видавництві.
         /// </summary>
+        [JsonIgnore]
         public abstract string Role { get; }
 
         private static string ValidateName(string value, string fieldName)

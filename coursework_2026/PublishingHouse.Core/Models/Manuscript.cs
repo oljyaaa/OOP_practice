@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using PublishingHouse.Core.Interfaces;
 using PublishingHouse.Core.Models.Enums;
 
@@ -81,6 +82,7 @@ namespace PublishingHouse.Core.Models
             set => _reviewComment = value?.Trim() ?? string.Empty;
         }
 
+        [JsonIgnore]
         public bool CanBeReviewed => Stage == ManuscriptStage.UnderReview;
 
         public int CompareTo(Manuscript? other)
